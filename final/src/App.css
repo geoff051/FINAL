@@ -1,0 +1,15 @@
+.center-image {
+    display: block;
+    margin: 0 auto; 
+    max-width: 200px; 
+    height: auto; 
+    margin-top: 50px;
+  }
+
+  .background {
+    background-color: #f7f7f7;
+  }
+
+
+
+ 
