@@ -4,6 +4,7 @@ import  {BrowserRouter, Routes, Route} from 'react-router-dom'
 import Login from './login'
 import CreateStudent from './adminPOV/CreateStudent'
 import StudentListAdmin from './adminPOV/StudentListAdmin'
+import UpdateStudent from './adminPOV/UpdateStudent'
 
 
 
@@ -16,7 +17,8 @@ function App() {
         <Routes>
             <Route path="/" element={<Login />}></Route> 
             <Route path="/createStudent" element={<CreateStudent />}></Route>
-            <Route path="/studentListAdmin" element={<StudentListAdmin />}></Route>    
+            <Route path="/updateStudent" element={<UpdateStudent />}></Route> 
+            <Route path="/studentListAdmin" element={<StudentListAdmin />}></Route>   
         </Routes>
       </BrowserRouter>
     </div>

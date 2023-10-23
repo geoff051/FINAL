@@ -1,36 +1,23 @@
-import React from "react";
+import React, { useState } from "react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import axios from "axios";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getUser } from "./userSlice";
-
+import { Link } from "react-router-dom"
 
 function StudentListAdmin(){
-
-    const dispatch = useDispatch()
-    const users = useSelector(state => state.users.users)
-    console.log(useSelector(state => state.users.users));
-
-    useEffect(()=> {
-        const fetchData = async() => {
-          try {
-            const response = await axios.get('http://localhost:3001');
-            dispatch(getUser(response.data));
-        } catch(err) {
-            console.log(err)
-          }
-        }
-        fetchData();
-      }, [])
-      
+    const [student, setStudent] = useState([{
+        Firstname: "Geoff", 
+        Lastname: "Escoto", 
+        Grade: 5,
+        Section: "Maruya",
+        LRN: 123456
+    }])
 
     return(
     <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
         <div className="w-50 bg-white rounder p-3">
-            <button className="btn btn-success btn-sm">
-                ADD +
-            </button>
+            <Link to="/createStudent" className="btn btn-success btn-sm">Add Student +</Link>
+         
             <table className="table">
                 <thead>
                     <tr>
@@ -38,23 +25,24 @@ function StudentListAdmin(){
                         <th>Grade</th>
                         <th>Section</th>
                         <th>LRN</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    {
-                        users.map(user => {
-                           return <tr>
-                                <td>{user.Firstname}</td>
-                                <td>{user.Grade}</td>
-                                <td>{user.Section}</td>
-                                <td>{user.LRN}</td>
-                                <td>
-                                    <button className="btn btn-sm btn-danger">Update</button>
-                                    <button className="btn btn-sm btn-danger">Delete</button>
-                                </td>
-                            </tr>
-                        })
-                    }
+                   {
+                    student.map((student) => {
+                        return <tr>
+                            <td>{student.Firstname} {student.Lastname}</td>
+                            <td>{student.Grade}</td>
+                            <td>{student.Section}</td>
+                            <td>{student.LRN}</td>
+                            <td>
+                            <Link to="/updateStudent" className="btn btn-success btn-sm">Update</Link>
+                                <button>Delete</button>
+                            </td>
+                        </tr>
+                    })
+                   }
                 </tbody>
             </table>
         </div>
