@@ -4,20 +4,35 @@ import axios from "axios";
 import { useEffect } from "react";
 import { Link } from "react-router-dom"
 
+
 function StudentListAdmin(){
-    const [student, setStudent] = useState([{
-        Firstname: "Geoff", 
-        Lastname: "Escoto", 
-        Grade: 5,
-        Section: "Maruya",
-        LRN: 123456
-    }])
+    const [student, setStudent] = useState([])
+    const [search, setSearch] = useState('')
+
+    useEffect(()=> {
+        axios.get('http://localhost:3001/student')
+        .then(result => setStudent(result.data))
+        .catch(err => console.log(err))
+
+    },[])
+
+    const handleDelete = (id) => {
+        axios.delete('http://localhost:3001/student/'+id)
+        .then(res => {console.log(res)
+            window.location.reload()})
+        .catch(err => console.log(err))
+    }
+
+   
 
     return(
-    <div className="d-flex vh-100 bg-primary justify-content-center align-items-center">
-        <div className="w-50 bg-white rounder p-3">
+        <div className="background">
+            <div className="d-flex vh-100 justify-content-center align-items-center">
+        <div className="ftable">
             <Link to="/createStudent" className="btn btn-success btn-sm">Add Student +</Link>
-         
+            <input type="text" placeholder="Search Student" className="search" style={{float: "right"}}
+             onChange={(e) => setSearch(e.target.value)}/>
+
             <table className="table">
                 <thead>
                     <tr>
@@ -29,16 +44,20 @@ function StudentListAdmin(){
                     </tr>
                 </thead>
                 <tbody>
-                   {
-                    student.map((student) => {
+                   {student.filter((student) => {
+                    return search.toLowerCase() === '' ? student : student.Firstname.
+                    toLowerCase().includes(search)
+                   }).sort( (a,b) => a.Firstname > b.Firstname ? 1 : -1).map((student) => {
                         return <tr>
                             <td>{student.Firstname} {student.Lastname}</td>
                             <td>{student.Grade}</td>
                             <td>{student.Section}</td>
                             <td>{student.LRN}</td>
                             <td>
-                            <Link to="/updateStudent" className="btn btn-success btn-sm">Update</Link>
-                                <button>Delete</button>
+                            <Link to={`/updateStudent/${student._id}`} className="btn btn-success btn-sm">Update</Link>
+                            <Link to={`/studentInfoAdmin/${student._id}`} className="btn btn-info btn-sm">View</Link>
+                                <button className="btn btn-danger btn-sm"
+                                onClick={(e) => handleDelete(student._id)}>Delete</button>
                             </td>
                         </tr>
                     })
@@ -48,6 +67,8 @@ function StudentListAdmin(){
         </div>
 
     </div>
+        </div>
+    
     )
 }
 

@@ -1,20 +1,72 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
-const UserModel = require('./Models/StudentInfo')
 
-const sInfo = express()
-sInfo.use(cors())
-sInfo.use(express.json())
+//passport & session & path
+const path = require('path')
+const passport = require('passport')
+const session = require('express-session')
 
-mongoose.connect("mongodb://127.0.0.1:27017/Final")
+//new morgan
+const morgan = require('morgan')
 
-sInfo.post("/createStudent", (req, res) => {
-  UserModel.create(req.body)
-  .then(studentInfo => res.json(studentInfo))
-  .catch(err => res.json(err))
-})
+//(new) path to connect to .env
+const dotenv = require('dotenv')
+dotenv.config({ path: './config/config.env'})
 
-sInfo.listen(3001, () => {
+//passport config
+require('./config/passport')(passport)
+
+const studentRoute = require('./Routes/Student')
+const teacherRoute = require('./Routes/Teacher')
+const attendanceRoute = require('./Routes/Attendance')
+const sectionRoute = require('./Routes/Section')
+const attendanceReportRoute = require('./Routes/AttendanceReport')
+//new
+const loginRoute = require('./Routes/Login')
+const authRoute = require('./Routes/auth')
+
+
+
+const app = express()
+app.use(cors())
+app.use(express.json())
+
+//morgan
+if(process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'))
+}
+
+//Static folder
+app.use(express.static(path.join(__dirname, 'teacherPOV')))
+
+//session middleware
+app.use(session({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+}))
+//passport middleware
+app.use(passport.initialize())
+app.use(passport.session())
+
+
+
+mongoose.connect("mongodb+srv://botoyski123:13245724Ge@final.caukqer.mongodb.net/Final?retryWrites=true&w=majority")
+
+//new
+app.use("/login", loginRoute);
+app.use("/auth", authRoute)
+
+
+app.use("/student", studentRoute);
+app.use("/teacher", teacherRoute);
+app.use("/attendance", attendanceRoute);
+app.use("/section", sectionRoute);
+app.use("/attendanceReport", attendanceReportRoute)
+
+
+
+app.listen(3001, () => {
     console.log("Server is Running");
 })

@@ -13,8 +13,18 @@ import {
 }
 from 'mdb-react-ui-kit';
 import Slogo from "./picsrc/buksupic.png";
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
+
+  const navigate = useNavigate();
+
+    const handleGoogleLogin = () => {
+      // Redirect to the server route that initiates the Google OAuth flow
+      window.location.href = 'http://localhost:3001/auth/google';
+    };
+
   return ( 
   
        <MDBContainer fluid className='background'>
@@ -39,10 +49,15 @@ function Login() {
 
               <hr className="my-4" />
 
-              <MDBBtn className="mb-2 w-100" size="lg" style={{backgroundColor: '#dd4b39'}}>
+            
+              <button onClick={handleGoogleLogin}>Log In With Google</button>
+              {/* <button to="/auth/google" className='btn red darken-1'>
+                <i className="fab fa-google left"></i> Log In With Google
+              </button> */}
+              {/* <MDBBtn className="mb-2 w-100" size="lg" style={{backgroundColor: '#dd4b39'} }>
                 <MDBIcon fab icon="google" className="mx-2"/>
                 Sign in with google
-              </MDBBtn>
+              </MDBBtn> */}
 
             </MDBCardBody>
           </MDBCard>

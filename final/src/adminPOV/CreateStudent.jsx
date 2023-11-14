@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
@@ -6,6 +6,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import { MDBCard, MDBCardBody } from "mdb-react-ui-kit";
 import axios from 'axios'
+import { Link } from 'react-router-dom';
+
 
 
 
@@ -14,7 +16,6 @@ import axios from 'axios'
 function CreateStudent() {
   const [validated, setValidated] = useState(false);
   const current = new Date().toISOString().split("T")[0]
- 
   
   const [Firstname, setFirstname] = useState()
   const [Lastname, setLastname] = useState()
@@ -31,7 +32,7 @@ function CreateStudent() {
   const [Father, setFather] = useState()
   const [PEmail, setPEmail] = useState()
   const [Contact, setContact] = useState()
-
+  
  
   
   const handleSubmit = (e) => {
@@ -39,16 +40,18 @@ function CreateStudent() {
     if (form.checkValidity() === false) {
       e.preventDefault();
       e.stopPropagation();
-      axios.post("http://localhost:3001/createStudent", 
+      
+    } else{
+      axios.post("http://localhost:3001/student", 
       {Firstname, Lastname, Middlename, DOB, Street, Barangay, City, Province, Grade,
       Section, LRN, Mother, Father, PEmail, Contact})
       .then(result => console.log(result))
       .catch(err => console.log(err))
+      alert("Student Created Successfully!")
     }
 
    setValidated(true);
   };
-
 
   return (
     <div className='background'>
@@ -257,12 +260,14 @@ function CreateStudent() {
         />
       </Form.Group>
       <Button type="submit">Submit form</Button>
-    </Form>  
-          
+      
+      </Form>  
+      
              
         </MDBCardBody>
      
     </MDBCard>
+    <Link to="/studentListAdmin"  className="backbutton">Back</Link>
     </div>
     
     
