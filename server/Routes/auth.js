@@ -7,7 +7,7 @@ router.get('/', (req, res) => {
   });
 
 // Authenticate with google
-router.get('/google', passport.authenticate('google', { scope: ['profile'] }))
+router.get('/google', passport.authenticate('google', { scope: ['profile', 'email'] }))
 
 // Google callback
 router.get(
@@ -16,5 +16,10 @@ router.get(
     (req, res) => {
         res.redirect('/teacherHomepage')
     })
+
+router.get('/logout', (req, res) => {
+        req.logout()
+        res.redirect('/')
+    });
 
 module.exports = router

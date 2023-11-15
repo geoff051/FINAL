@@ -54,6 +54,8 @@ app.use(passport.session())
 
 mongoose.connect("mongodb+srv://botoyski123:13245724Ge@final.caukqer.mongodb.net/Final?retryWrites=true&w=majority")
 
+
+
 //new
 app.use("/login", loginRoute);
 app.use("/auth", authRoute)

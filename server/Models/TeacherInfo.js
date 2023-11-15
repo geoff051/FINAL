@@ -13,10 +13,6 @@ const TeacherSchema = new mongoose.Schema({
     GradeHandled: String,
     Email: String,
     Contact: Number,
-    googleId: {
-        type: String,
-        required: true
-    }
 })
 
 const TeacherModel = mongoose.model("teacherinfo", TeacherSchema)
