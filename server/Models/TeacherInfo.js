@@ -13,6 +13,7 @@ const TeacherSchema = new mongoose.Schema({
     GradeHandled: String,
     Email: String,
     Contact: Number,
+    verified: {type: Boolean, default: false}
 })
 
 const TeacherModel = mongoose.model("teacherinfo", TeacherSchema)

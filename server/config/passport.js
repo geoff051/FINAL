@@ -11,22 +11,11 @@ module.exports = function(passport) {
     async (accessToken, refreshToken, profile, done) => {
         console.log(profile)
 
+        
         const email = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
         
 
         if (email) {
-            console.log('User Email:', email);
-
-            // Create a new user object
-            const newUser = {
-                googleID: profile.id,
-                displayName: profile.displayName,
-                firstName: profile.name.givenName,
-                lastName: profile.name.familyName,
-                image: profile.photos[0].value,
-                email: email // Add the email to the user object
-            };
-            
             
             try {
                 const userEmail = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : '';
@@ -35,7 +24,28 @@ module.exports = function(passport) {
                 if (user) {
                     // Check if the Google email matches the stored email
                     if (profile.emails && profile.emails.length > 0 && user.Email === profile.emails[0].value) {
-                        done(null, user);
+                        if (user.verified) {
+                            done(null, {
+                                id: user.id,
+                                additionalData: {
+                                    Firstname: user.Firstname,
+                                    Lastname: user.Lastname,
+                                    Middlename: user.Middlename,
+                                    DOB: user.DOB,
+                                    Street: user.Street,
+                                    Barangay: user.Barangay,
+                                    City: user.City,
+                                    Province: user.Province,
+                                    SectionHandled: user.SectionHandled,
+                                    GradeHandled: user.GradeHandled,
+                                    Email: user.Email,
+                                    Contact: user.Contact
+                                }
+                            });
+                        } else {
+                            // Notify that the user is not verified
+                            done(null, false, { message: 'User not verified. Please verify your account.' });
+                        }
                     } else {
                         // Notify that the user is not allowed to access
                         done(null, false, { message: 'User not allowed to access.' });
@@ -55,16 +65,13 @@ module.exports = function(passport) {
         }
     }));
 
+    
     passport.serializeUser((user, done) => {
         done(null, user.id)
     })
     passport.deserializeUser((id, done) => {
         TeacherModel.findOne({ _id: id })
             .then(user => {
-                // Log the user's email from the collection
-                const userEmail = user && user.Email;
-                console.log('User Email from MongoDB (deserializeUser):', userEmail);
-    
                 done(null, user);
             })
             .catch(err => done(err));

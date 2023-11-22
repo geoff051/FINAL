@@ -61,13 +61,13 @@ function UpdateTeacher(){
       .catch(err => console.log(err))
       
     }
-      alert("Student Info Updated Successfully!")
+      alert("Teacher Info Updated Successfully!")
       setValidated(true);
     };
 
     return(
         <div className='background'>
-        <h1><center>UPDATE STUDENT</center></h1>
+        <h1><center>UPDATE TEACHER</center></h1>
         <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '1500px'}}>
         <MDBCardBody className='p-5 w-100 d-flex flex-column'>
          

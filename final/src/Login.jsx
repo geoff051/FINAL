@@ -16,13 +16,14 @@ import Slogo from "./picsrc/buksupic.png";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
+
 function Login() {
 
   const navigate = useNavigate();
 
     const handleGoogleLogin = () => {
       // Redirect to the server route that initiates the Google OAuth flow
-      window.location.href = 'http://localhost:3001/auth/google';
+       window.location.href = 'http://localhost:3001/auth/google';
     };
 
   return ( 

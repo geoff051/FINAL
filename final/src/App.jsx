@@ -1,51 +1,48 @@
-import { useState } from 'react'
 import './App.css'
-import  {BrowserRouter, Routes, Route} from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+
+import LayoutTPOV from './components/LayoutTPOV'
 import Layout from './components/Layout'
 import Login from './Login'
-import CreateStudent from './adminPOV/CreateStudent'
-import StudentListAdmin from './adminPOV/StudentListAdmin'
-import UpdateStudent from './adminPOV/UpdateStudent'
-import StudentInfoAdmin from './adminPOV/StudentInfoAdmin'
-import ClassListAdmin from './adminPOV/ClassListAdmin'
-import AddClassList from './adminPOV/AddClassList'
-import StudentListSection from './adminPOV/StudentListSection'
-import TeacherList from './adminPOV/TeacherList'
-import CreateTeacher from './adminPOV/CreateTeacher'
-import UpdateTeacher from './adminPOV/UpdateTeacher'
-import TeacherInfoAdmin from './adminPOV/TeacherInfoAdmin'
-import AdminHomepage from './adminPOV/AdminHomepage'
-import TeacherHomepage from './teacherPOV/TeacherHomepage'
 
 
+import * as adminPOV from './adminPOV/index'
+import * as teacherPOV from './teacherPOV/indexTPOV'
 
 
 function App() {
-  const [count, setCount] = useState(0)
+
 
   return (
     <div className="App">
-       <BrowserRouter>
+      <BrowserRouter>
         <Routes>
-            <Route path="/" element={<Login />}></Route> 
-            <Route path="/adminHomepage" element={<Layout><AdminHomepage /></Layout>}></Route>
-            <Route path="/createStudent" element={<CreateStudent />}></Route>
-            <Route path="/updateStudent/:id" element={<UpdateStudent />}></Route> 
-            <Route path="/studentListAdmin" element={<Layout><StudentListAdmin /></Layout>}></Route>   
-            <Route path="/studentInfoAdmin/:id" element={<Layout><StudentInfoAdmin /></Layout>}></Route>
-            <Route path="/addClassList" element={<AddClassList />}></Route>
-            <Route path="/studentListSection/:sectionId" element={<Layout><StudentListSection /></Layout>}></Route>
-            <Route path="/classListAdmin" element={<Layout><ClassListAdmin /></Layout>}></Route>
-            <Route path="/teacherList" element={<Layout><TeacherList /></Layout>}></Route>
-            <Route path="/createTeacher" element={<CreateTeacher />}></Route>
-            <Route path="/updateTeacher/:id" element={<UpdateTeacher />}></Route>
-            <Route path="/teacherInfoAdmin/:id" element={<Layout><TeacherInfoAdmin /></Layout>}></Route>
-            <Route path="/teacherHomepage" element={<TeacherHomepage />}></Route>
+          <Route path="/" element={<Login />}></Route>
+          <Route path="/adminHomepage" element={<Layout><adminPOV.AdminHomepage /></Layout>}></Route>
+          <Route path="/createStudent" element={<adminPOV.CreateStudent />}></Route>
+          <Route path="/updateStudent/:id" element={<adminPOV.UpdateStudent />}></Route>
+          <Route path="/studentListAdmin" element={<Layout><adminPOV.StudentListAdmin /></Layout>}></Route>
+          <Route path="/studentInfoAdmin/:id" element={<Layout><adminPOV.StudentInfoAdmin /></Layout>}></Route>
+          <Route path="/addClassList" element={<adminPOV.AddClassList />}></Route>
+          <Route path="/studentListSection/:sectionId" element={<Layout><adminPOV.StudentListSection /></Layout>}></Route>
+          <Route path="/classListAdmin" element={<Layout><adminPOV.ClassListAdmin /></Layout>}></Route>
+          <Route path="/teacherList" element={<Layout><adminPOV.TeacherList /></Layout>}></Route>
+          <Route path="/createTeacher" element={<adminPOV.CreateTeacher />}></Route>
+          <Route path="/updateTeacher/:id" element={<adminPOV.UpdateTeacher />}></Route>
+          <Route path="/teacherInfoAdmin/:id" element={<Layout><adminPOV.TeacherInfoAdmin /></Layout>}></Route>
+
+          <Route path="/verification" element={<teacherPOV.Verification />}></Route>
+          <Route path="/teacherHomepage" element={<LayoutTPOV><teacherPOV.TeacherHomepage /></LayoutTPOV>}></Route>
+          <Route path="/classListTeacher" element={<LayoutTPOV><teacherPOV.ClassListTeacher /></LayoutTPOV>}></Route>
+          <Route path="/studentInfoTeacher/:id" element={<teacherPOV.StudentInfoTeacher />}></Route>
+          <Route path="/attendanceTracker" element={<LayoutTPOV><teacherPOV.AttendanceTracker /></LayoutTPOV>}></Route>
+          <Route path="/teacherInfoTeacher" element={<LayoutTPOV><teacherPOV.TeacherInfoTeacher /></LayoutTPOV>}></Route>
+          <Route path="/teacherPersonalUpdate/:id" element={<teacherPOV.TeacherPersonalUpdate />}></Route>
         </Routes>
       </BrowserRouter>
     </div>
-   
-    
+
+
   )
 }
 
