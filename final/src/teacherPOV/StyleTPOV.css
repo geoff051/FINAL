@@ -1,0 +1,78 @@
+
+
+/* CSS FOR SELECT OPTION */
+.select {
+  width: 125px;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.selectopt {
+  width: 100%;
+  height: 30px;
+  border: none;
+  border-radius: 5px;
+  background: #a7acad; /* Default background color */
+  color: #fff;
+  padding: 5px;
+  cursor: pointer;
+  outline: none;
+}
+
+.selectopt.Present {
+  background-color: #00ff00; /* Background color for Present */
+}
+
+.selectopt.Absent {
+  background-color: #ff2800; /* Background color for Absent */
+}
+
+.selectopt.Late {
+  background-color: #ffbf00; /* Background color for Late */
+}
+
+.selectopt.Excused {
+  background-color: #0072bb; /* Background color for Excused */
+}
+
+
+/* CSS FOR BUTTOn */
+.submitbtn {
+  padding: 15px 25px;
+  border: unset;
+  border-radius: 15px;
+  color: #212121;
+  z-index: 1;
+  background: #e8e8e8;
+  position: relative;
+  font-weight: 1000;
+  font-size: 17px;
+  -webkit-box-shadow: 4px 8px 19px -3px rgba(0,0,0,0.27);
+  box-shadow: 4px 8px 19px -3px rgba(0,0,0,0.27);
+  transition: all 250ms;
+  overflow: hidden;
+  float: left; 
+ }
+ 
+ .submitbtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  border-radius: 15px;
+  background-color: #48A14D;
+  z-index: -1;
+  -webkit-box-shadow: 4px 8px 19px -3px rgba(0,0,0,0.27);
+  box-shadow: 4px 8px 19px -3px rgba(0,0,0,0.27);
+  transition: all 250ms
+ }
+ 
+ .submitbtn:hover {
+  color: #e8e8e8;
+ }
+ 
+ .submitbtn:hover::before {
+  width: 100%;
+ }

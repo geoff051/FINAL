@@ -67,7 +67,6 @@ function StudentInfoTeacher (){
                         <li><strong>Father:</strong> {Father} </li>
                         <li><strong>PEmail:</strong> {PEmail} </li>
                         <li><strong>Contact:</strong> {Contact} </li>
-                        <Link to={'/classListTeacher'} className="btn btn-info btn-sm">Back</Link>
                     </ul>
             </div>
            

@@ -5,8 +5,9 @@ import { Link } from "react-router-dom";
 function ClassListTeacher(){
     const [students, setStudents] = useState([]);
     const [teacher, setTeacher] = useState({});
-    const [teacherData, setTeacherData] = useState ([])
-  
+    const [teacherData, setTeacherData] = useState ([]);
+    const [search, setSearch] = useState('');
+    
     useEffect(() => {
         axios.get('http://localhost:3001/teacher/api/userData', { withCredentials: true })
           .then(response => {
@@ -51,6 +52,9 @@ function ClassListTeacher(){
         <div className="background">
             <div className="d-flex vh-100 justify-content-center align-items-center">
                 <div className="ftable">
+                <input type="text" placeholder="Search Student" className="search" style={{float: "right"}}
+             onChange={(e) => setSearch(e.target.value)}/>
+
                 <h4>Section: {teacherData.additionalData?.SectionHandled || "N/A"} </h4>
                     <table className="table">
                         <thead>
@@ -63,7 +67,10 @@ function ClassListTeacher(){
                             </tr>
                         </thead>
                         <tbody>
-                            {students.map((student) => (
+                            {students.filter((student) => {
+                    return search.toLowerCase() === '' ? student : student.Firstname.
+                    toLowerCase().includes(search)
+                   }).sort( (a,b) => a.Firstname > b.Firstname ? 1 : -1).map((student) => (
                                 <tr key={student._id}>
                                     <td>{student.Firstname} {student.Lastname}</td>
                                     <td>{student.Grade}</td>

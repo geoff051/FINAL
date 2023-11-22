@@ -34,7 +34,7 @@ function App() {
           <Route path="/verification" element={<teacherPOV.Verification />}></Route>
           <Route path="/teacherHomepage" element={<LayoutTPOV><teacherPOV.TeacherHomepage /></LayoutTPOV>}></Route>
           <Route path="/classListTeacher" element={<LayoutTPOV><teacherPOV.ClassListTeacher /></LayoutTPOV>}></Route>
-          <Route path="/studentInfoTeacher/:id" element={<teacherPOV.StudentInfoTeacher />}></Route>
+          <Route path="/studentInfoTeacher/:id" element={<LayoutTPOV><teacherPOV.StudentInfoTeacher /></LayoutTPOV>}></Route>
           <Route path="/attendanceTracker" element={<LayoutTPOV><teacherPOV.AttendanceTracker /></LayoutTPOV>}></Route>
           <Route path="/teacherInfoTeacher" element={<LayoutTPOV><teacherPOV.TeacherInfoTeacher /></LayoutTPOV>}></Route>
           <Route path="/teacherPersonalUpdate/:id" element={<teacherPOV.TeacherPersonalUpdate />}></Route>
