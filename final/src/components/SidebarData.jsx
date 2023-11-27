@@ -3,6 +3,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import SchoolIcon from '@mui/icons-material/School';
 import Diversity3Icon from '@mui/icons-material/Diversity3';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import LogoutIcon from '@mui/icons-material/Logout';
+
 
 export const SidebarData = [
     {
@@ -24,5 +27,19 @@ export const SidebarData = [
         title: "Teacher",
         icon: <SupervisorAccountIcon />,
         link: "/teacherList"
+    },
+    {
+        title: "Admin registration",
+        icon: <AdminPanelSettingsIcon />,
+        link: "/createAdminAccount"
+    },
+    {
+        title: "Logout",
+        icon: <LogoutIcon />,
+        onClick: () => {
+            // Your logout logic here
+            localStorage.removeItem('token');
+            window.location.pathname = "/"; // Redirect to the login page
+        }
     }
 ]

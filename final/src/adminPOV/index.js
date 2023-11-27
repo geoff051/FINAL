@@ -10,6 +10,8 @@ import CreateTeacher from './CreateTeacher'
 import UpdateTeacher from './UpdateTeacher'
 import TeacherInfoAdmin from './TeacherInfoAdmin'
 import AdminHomepage from './AdminHomepage'
+import CreateAdminAccount from './CreateAdminAccount'
+import VerificationAdmin from './VerificationAdmin'
 
 
 export {
@@ -18,5 +20,6 @@ export {
     UpdateStudent, StudentInfoAdmin,
     ClassListAdmin, AddClassList,
     StudentListSection, TeacherList,
-    UpdateTeacher, AdminHomepage
+    UpdateTeacher, AdminHomepage,
+    CreateAdminAccount, VerificationAdmin
 }

@@ -25,7 +25,7 @@ const sendEmailT = expressAsyncHandler(async (PEmail, studentName, studentStatus
     },
     to: PEmail,
     subject: "Attendance Report",
-    text: `Dear Parent your Son/Daughter ${studentName} is: ${studentStatus} for today!\n\nBest regards,\nBarangay 9 Elementary School`,
+    text: `Dear Parent your Son/Daughter ${studentName} is ${studentStatus} for today!\n\nBest regards,\nBarangay 9 Elementary School`,
   };
 
   try {

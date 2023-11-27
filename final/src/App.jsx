@@ -8,6 +8,7 @@ import Login from './Login'
 
 import * as adminPOV from './adminPOV/index'
 import * as teacherPOV from './teacherPOV/indexTPOV'
+import * as resetPASS from './PASS RESET/index'
 
 
 function App() {
@@ -30,6 +31,9 @@ function App() {
           <Route path="/createTeacher" element={<adminPOV.CreateTeacher />}></Route>
           <Route path="/updateTeacher/:id" element={<adminPOV.UpdateTeacher />}></Route>
           <Route path="/teacherInfoAdmin/:id" element={<Layout><adminPOV.TeacherInfoAdmin /></Layout>}></Route>
+          <Route path="/createAdminAccount" element={<Layout><adminPOV.CreateAdminAccount /></Layout>}></Route>
+          <Route path="/verificationAdmin" element={<adminPOV.VerificationAdmin/>}></Route>
+          
 
           <Route path="/verification" element={<teacherPOV.Verification />}></Route>
           <Route path="/teacherHomepage" element={<LayoutTPOV><teacherPOV.TeacherHomepage /></LayoutTPOV>}></Route>
@@ -38,6 +42,10 @@ function App() {
           <Route path="/attendanceTracker" element={<LayoutTPOV><teacherPOV.AttendanceTracker /></LayoutTPOV>}></Route>
           <Route path="/teacherInfoTeacher" element={<LayoutTPOV><teacherPOV.TeacherInfoTeacher /></LayoutTPOV>}></Route>
           <Route path="/teacherPersonalUpdate/:id" element={<teacherPOV.TeacherPersonalUpdate />}></Route>
+
+
+          <Route path="/inputNewPassword" element={<resetPASS.InputNewPassword />}></Route>
+          <Route path="/inputEmail" element={<resetPASS.InputEmail/>}></Route>
         </Routes>
       </BrowserRouter>
     </div>

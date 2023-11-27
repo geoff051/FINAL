@@ -9,9 +9,9 @@ const TeacherSchema = new mongoose.Schema({
     Barangay: String,
     City: String,
     Province: String,
-    SectionHandled: String,
+    SectionHandled: {type: String, unique: true},
     GradeHandled: String,
-    Email: String,
+    Email: {type: String, unique: true},
     Contact: Number,
     verified: {type: Boolean, default: false}
 })
