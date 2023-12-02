@@ -17,6 +17,12 @@ function UpdateStudent() {
   const [validated, setValidated] = useState(false);
   const current = new Date().toISOString().split("T")[0]
   const {id} = useParams()
+
+
+  const [allSections, setallSections] = useState()
+  const [sectionOptions, setSectionOptions] = useState([{ _id: '', SectionName: 'Choose a section' }]);
+  const [sectionSelected, setSectionSelected] = useState(false);
+
   
   const [Firstname, setFirstname] = useState()
   const [Lastname, setLastname] = useState()
@@ -55,6 +61,42 @@ function UpdateStudent() {
     })
     .catch(err => console.log(err))
 },[])
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const sectionsResponse = await axios.get('http://localhost:3001/student/all-sections');
+      setallSections(sectionsResponse.data);
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  fetchData();
+}, []);
+
+
+const handleSectionDropdownClick = async () => {
+  // Load sections when the dropdown is clicked
+  try {
+    const sectionsResponse = await axios.get('http://localhost:3001/student/all-sections');
+    setSectionOptions([{ _id: '', SectionName: 'Choose a section' }, ...sectionsResponse.data]);
+  } catch (error) {
+    console.error('Error fetching sections:', error);
+  }
+};
+
+const handleSectionChange = (value) => {
+  setSection(value);
+  // Update the sectionSelected state when a section is chosen
+  setSectionSelected(value !== 'Choose a section');
+};
+
+
+
+
+
   
   const Update = (e) => {
     const form = e.currentTarget;
@@ -75,9 +117,9 @@ function UpdateStudent() {
     };
 
   return (
-    <div className='background'>
+    <div className='background'><br /><br />
         <h1><center>UPDATE STUDENT</center></h1>
-        <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '1500px'}}>
+        <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '1000px'}}>
         <MDBCardBody className='p-5 w-100 d-flex flex-column'>
          
             <Form noValidate validated={validated} onSubmit={Update}>
@@ -217,14 +259,25 @@ function UpdateStudent() {
         </Form.Group>
         <Form.Group as={Col} md="3" controlId="validationCustom08">
           <Form.Label>Section</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            placeholder="Section"
-            value = {Section}
-            onChange={(e) => setSection(e.target.value)}
-          />
+          <Form.Select
+                  required
+                  onClick={handleSectionDropdownClick}
+                  onChange={(e) => handleSectionChange(e.target.value)}
+                  className={sectionSelected ? 'is-valid' : 'is-invalid'}
+                >
+                  {sectionOptions.map((section) => (
+                    <option
+                      key={section._id}
+                      value={section.SectionName}
+                      >
+                      {section.SectionName}
+                    </option>
+                  ))}
+                </Form.Select>
           <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+          {validated && !sectionSelected && (
+              <div className="text-danger mt-2">Please choose a section.</div>
+            )}
         </Form.Group>
         <Form.Group as={Col} md="4" controlId="validationCustom09">
           <Form.Label>LRN</Form.Label>
@@ -302,14 +355,6 @@ function UpdateStudent() {
         
       </Row>
 
-      <Form.Group className="mb-3">
-        <Form.Check
-          required
-          label="Agree to terms and conditions"
-          feedback="You must agree before submitting."
-          feedbackType="invalid"
-        />
-      </Form.Group>
       <Button type="submit">Submit form</Button>
       
       </Form>  

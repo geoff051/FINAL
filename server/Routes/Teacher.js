@@ -4,6 +4,49 @@ const sendEmail = require('../config/sendEmail')
 const TeacherModel = require('../Models/TeacherInfo');
 const StudentModel = require('../Models/StudentInfo')
 const passport = require('passport');
+const SectionModel = require('../Models/SectionInfo');
+
+
+
+
+router.get('/all-sections', async (req, res) => {
+  try {
+    console.log('Fetching all sections...');
+    // Fetch all sections from the SectionModel
+    const allSections = await SectionModel.find({}).exec();
+    console.log('Sections:', allSections);
+    res.json(allSections);  
+  } catch (error) {
+    console.error('Error fetching sections:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.get('/all-teachers', async (req, res) => {
+  try {
+    const allTeachers = await TeacherModel.find({}).exec();
+    console.log('Teachers:', allTeachers);
+    res.json(allTeachers);
+  } catch (error) {
+    console.error('Error fetching teachers:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+router.get('/check-section-assignment/:sectionName', async (req, res) => {
+  try {
+    const sectionName = req.params.sectionName;
+
+    // Check if the section is already assigned to any teacher
+    const isSectionAssigned = await TeacherModel.exists({ SectionHandled: sectionName });
+
+    res.json({ isSectionAssigned });
+  } catch (error) {
+    console.error('Error checking section assignment:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
 
@@ -44,16 +87,41 @@ router.get('/api/getStudent', async (req, res) => {
 });
 
 
-//get data from database to the teacher list
+//get data of specific teacher
 router.get("/", (req, res) => {
     TeacherModel.find({})
     .then(teacherinfo => res.json(teacherinfo))
     .catch(err => res.json(err))
   })
   
-  //send teacher data to database
+  //Save teacher to database
   router.post("/", async (req, res) => {
     try {
+      // Check if the email already exists
+      const existingTeacher = await TeacherModel.findOne({ Email: req.body.Email });
+  
+      if (existingTeacher) {
+        // Email already exists, send a response with an error message
+        return res.status(400).json({ error: "Email already exists", field: "Email" });
+      }
+
+      const teacherInfoData = {
+        Firstname: req.body.Firstname,
+        Lastname: req.body.Lastname,
+        Middlename: req.body.Middlename,
+        DOB: req.body.DOB,
+        Street: req.body.Street,
+        Barangay: req.body.Barangay,
+        City: req.body.City,
+        Province: req.body.Province,
+        GradeHandled: req.body.GradeHandled,
+        SectionHandled: req.body.SectionHandled, 
+        Email: req.body.Email,
+        Contact: req.body.Contact,
+      };
+  
+      console.log('Data received from frontend:', teacherInfoData);
+  
       // Create a teacher record in the database
       const teacherInfo = await TeacherModel.create(req.body);
   
@@ -146,6 +214,10 @@ router.delete("/:id", (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+  
+  
+  
 
  
   module.exports = router;

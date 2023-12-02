@@ -3,6 +3,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import SchoolIcon from '@mui/icons-material/School';
 import PlaylistAddCheckCircleIcon from '@mui/icons-material/PlaylistAddCheckCircle';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import SummarizeIcon from '@mui/icons-material/Summarize';
 
 export const SidebarData = [
     {
@@ -24,6 +25,11 @@ export const SidebarData = [
         title: "Attendance Tracker",
         icon: <PlaylistAddCheckCircleIcon />,
         link: "/attendanceTracker"
+    },
+    {
+        title: "Generate Attendance Report",
+        icon: <SummarizeIcon />,
+        link: "/generateAttendanceReport"
     }
   
 ]

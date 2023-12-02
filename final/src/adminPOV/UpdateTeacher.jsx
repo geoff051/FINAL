@@ -66,9 +66,9 @@ function UpdateTeacher(){
     };
 
     return(
-        <div className='background'>
+        <div className='background'><br /><br />
         <h1><center>UPDATE TEACHER</center></h1>
-        <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '1500px'}}>
+        <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '1000px'}}>
         <MDBCardBody className='p-5 w-100 d-flex flex-column'>
          
             <Form noValidate validated={validated} onSubmit={Update}>
@@ -255,14 +255,7 @@ function UpdateTeacher(){
         
     
 
-      <Form.Group className="mb-3">
-        <Form.Check
-          required
-          label="Agree to terms and conditions"
-          feedback="You must agree before submitting."
-          feedbackType="invalid"
-        />
-      </Form.Group>
+     <br />
       <Button type="submit">Submit form</Button>
       
       </Form>  

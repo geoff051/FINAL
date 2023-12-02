@@ -26,16 +26,16 @@ function AddClassList(){
           {SectionName, Gradelvl, Adviser})
           .then(result => console.log(result))
           .catch(err => console.log(err))
-          alert("Student Created Successfully!")
+          alert("Section Created Successfully!")
         }
     
        setValidated(true);
       };
 
     return (
-        <div className='background'>
+        <div><br /><br />
         <h1><center>Add Section</center></h1>
-        <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '1500px'}}>
+        <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '600px'}}>
         <MDBCardBody className='p-5 w-100 d-flex flex-column'>
          
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
@@ -82,26 +82,20 @@ function AddClassList(){
 
       
 
-      <Form.Group className="mb-3">
-        <Form.Check
-          required
-          label="Agree to terms and conditions"
-          feedback="You must agree before submitting."
-          feedbackType="invalid"
-        />
-      </Form.Group>
+      
       <Button type="submit">Submit form</Button>
       
       </Form>  
       
              
         </MDBCardBody>
-     
+        <Link to="/classListAdmin"  className="backbutton">Back</Link>
+
     </MDBCard>
 
-    <Link to="/classListAdmin"  className="backbutton">Back</Link>
-
+    
     </div>
+    
     )
 }
 

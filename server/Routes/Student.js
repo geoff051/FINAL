@@ -16,6 +16,19 @@ router.post("/", (req, res) => {
     .then(studentinfo => res.json(studentinfo))
     .catch(err => res.json(err))
   })
+
+  router.get('/all-sections', async (req, res) => {
+    try {
+      console.log('Fetching all sections...');
+      // Fetch all sections from the SectionModel
+      const allSections = await SectionModel.find({}).exec();
+      console.log('Sections:', allSections);
+      res.json(allSections);  
+    } catch (error) {
+      console.error('Error fetching sections:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
   
   //To populate the fields when updating the student
 router.put("/:id", (req, res) => {

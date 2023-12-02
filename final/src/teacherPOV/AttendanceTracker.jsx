@@ -3,7 +3,8 @@ import axios from "axios";
 import './StyleTPOV.css';
 
 
-function ClassListTeacher() {
+
+function AttendanceTracker() {
   const [students, setStudents] = useState([]);
   const [teacher, setTeacher] = useState({});
   const [teacherData, setTeacherData] = useState([]);
@@ -185,4 +186,4 @@ function ClassListTeacher() {
   )
 }
 
-export default ClassListTeacher;
+export default AttendanceTracker;

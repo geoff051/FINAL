@@ -42,6 +42,7 @@ function App() {
           <Route path="/attendanceTracker" element={<LayoutTPOV><teacherPOV.AttendanceTracker /></LayoutTPOV>}></Route>
           <Route path="/teacherInfoTeacher" element={<LayoutTPOV><teacherPOV.TeacherInfoTeacher /></LayoutTPOV>}></Route>
           <Route path="/teacherPersonalUpdate/:id" element={<teacherPOV.TeacherPersonalUpdate />}></Route>
+          <Route path="/generateAttendanceReport" element={<LayoutTPOV><teacherPOV.GenerateAttendanceReport/></LayoutTPOV>}></Route>
 
 
           <Route path="/inputNewPassword" element={<resetPASS.InputNewPassword />}></Route>

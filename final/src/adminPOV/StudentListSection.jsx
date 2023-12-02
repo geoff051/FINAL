@@ -49,8 +49,8 @@ function StudentListSection() {
                                     <td>{student.Section}</td>
                                     <td>{student.LRN}</td>
                                     <td>
-                                        <Link to={`/updateStudent/${student._id}`} className="btn btn-success btn-sm">Update</Link>
-                                        <Link to={`/studentInfoAdmin/${student._id}`} className="btn btn-info btn-sm">View</Link>
+                                        <Link to={`/updateStudent/${student._id}`} className="btn btn-success btn-sm" style={{marginRight: "4px"}}>Update</Link>
+                                        <Link to={`/studentInfoAdmin/${student._id}`} className="btn btn-info btn-sm" style={{marginRight: "4px"}}>View</Link>
                                         <button className="btn btn-danger btn-sm"
                                             onClick={() => handleDelete(student._id)}>Delete</button>
                                     </td>
