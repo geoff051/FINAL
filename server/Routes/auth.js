@@ -22,8 +22,14 @@ router.get(
 
 //log out
 router.get('/logout', (req, res) => {
-    req.logOut()
-    res.redirect('/')
-})
+    req.logout((err) => {
+        if (err) {
+            console.error('Logout failed:', err);
+            // Handle error if needed
+            return res.redirect('/');  // Redirect even if an error occurs
+        }
+        res.redirect('/');
+    });
+});
 
 module.exports = router

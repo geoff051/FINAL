@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
+import { MDBCard, MDBCardBody } from "mdb-react-ui-kit"; // Import the necessary components from your MDBReact library
 
 function TeacherInfoTeacher() {
     const [teacherData, setTeacherData] = useState({});
@@ -23,30 +24,39 @@ function TeacherInfoTeacher() {
 
     return (
         <div className="d-flex vh-100 justify-content-center align-items-center">
-            <div className="w-50 bg-white rounder p-3">
-                <h2>Profile</h2>
-                <ul>
+            <MDBCard className="w-50 bg-white rounded p-3">
+                <MDBCardBody>
+                    <h2>Teacher Info</h2>
                     {teacherData.additionalData && (
-                        <>
-                            <li><strong>Firstname:</strong> {teacherData.additionalData.Firstname}</li>
-                            <li><strong>Lastname:</strong> {teacherData.additionalData.Lastname}</li>
-                            <li><strong>Middlename:</strong> {teacherData.additionalData.Middlename}</li>
-                            <li><strong>DOB:</strong> {teacherData.additionalData.DOB}</li>
-                            <li><strong>Street:</strong> {teacherData.additionalData.Street}</li>
-                            <li><strong>Barangay:</strong> {teacherData.additionalData.Barangay} </li>
-                            <li><strong>City:</strong> {teacherData.additionalData.City} </li>
-                            <li><strong>Province:</strong> {teacherData.additionalData.Province} </li>
-                            <li><strong>Grade Handled:</strong> {teacherData.additionalData.GradeHandled} </li>
-                            <li><strong>Section Handled:</strong> {teacherData.additionalData.SectionHandled} </li>
-                            <li><strong>Email:</strong> {teacherData.additionalData.Email} </li>
-                            <li><strong>Contact:</strong> {teacherData.additionalData.Contact} </li>
+                        <div className="profile-container">
+                            <div className="profile-item">
+                                <strong>Name:</strong> {`${teacherData.additionalData.Firstname} ${teacherData.additionalData.Middlename} ${teacherData.additionalData.Lastname}`}
+                            </div>
+                            <div className="profile-item">
+                                <strong>Date Of Birth:</strong> {teacherData.additionalData.DOB}
+                            </div>
+                            <div className="profile-item">
+                                <strong>Email:</strong> {teacherData.additionalData.Email}
+                            </div>
+                            <div className="profile-item">
+                                <strong>Contact:</strong> {teacherData.additionalData.Contact}
+                            </div>
+                            <div className="profile-item">
+                                <strong>Address:</strong> {`${teacherData.additionalData.Street}, ${teacherData.additionalData.Barangay}, ${teacherData.additionalData.City}, ${teacherData.additionalData.Province}`}
+                            </div>
+                            <div className="profile-item">
+                                <strong>Grade Handled:</strong> {teacherData.additionalData.GradeHandled}
+                            </div>
+                            <div className="profile-item">
+                                <strong>Section Handled:</strong> {teacherData.additionalData.SectionHandled}
+                            </div>
                             <Link to={`/teacherPersonalUpdate/${teacherData.id}`} className="btn btn-success btn-sm">Update</Link>
-                        </>
+                        </div>
                     )}
-                </ul>
-            </div>
+                </MDBCardBody>
+            </MDBCard>
         </div>
-    )
+    );
 }
 
 export default TeacherInfoTeacher;
