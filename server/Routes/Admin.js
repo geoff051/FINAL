@@ -25,7 +25,7 @@ router.get('/checkExistence', async (req, res) => {
 
 router.post('/createAdmin', async (req, res) => {
   try {
-    const { Firstname, Lastname, Email, Username, Password } = req.body;
+    const { Firstname, Lastname, Email, Username} = req.body;
 
     // Check if the email or username already exists
     const isEmailExists = await AdminModel.exists({ Email });
@@ -39,8 +39,6 @@ router.post('/createAdmin', async (req, res) => {
       return res.status(400).json({ error: 'Username already exists. Please choose a different username.' });
     }
 
-    // Hash the password before saving
-    const hashedPassword = await bcrypt.hash(Password, 10);
 
     // Save the admin information with the hashed password
     const adminInfo = await AdminModel.create({
@@ -48,7 +46,6 @@ router.post('/createAdmin', async (req, res) => {
       Lastname,
       Email,
       Username,
-      Password: hashedPassword,
     });
 
     // Only send verification email if admin creation is successful
@@ -94,6 +91,48 @@ router.post('/verificationAdmin', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+router.put('/updateUser/:userId', async (req, res) => {
+  const userId = req.params.userId;
+  const updatedUserData = req.body.updatedUserData;
+
+  try {
+    // Check if the user with the given ID exists
+    const user = await AdminModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Check if the username is already taken
+    const existingUser = await AdminModel.findOne({ Username: updatedUserData.Username });
+
+    if (existingUser && existingUser._id.toString() !== userId) {
+      return res.status(400).json({ message: 'Admin username is already taken' });
+    }
+
+    // Update user data
+    user.FirstName = updatedUserData.FirstName;
+    user.LastName = updatedUserData.LastName;
+    user.Email = updatedUserData.Email;
+    user.Username = updatedUserData.Username;
+
+    // Update the password only if a new password is provided
+    if (updatedUserData.Password) {
+      const hashedPassword = await bcrypt.hash(updatedUserData.Password, 10);
+      user.Password = hashedPassword;
+    }
+
+    // Save the updated user data to the database
+    await user.save();
+
+    res.json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Unexpected error' });
   }
 });
 

@@ -120,12 +120,46 @@ function CreateTeacher() {
   };
 
 
+  const handleLogout = () => {
+    localStorage.removeItem("Admintoken");
+    localStorage.removeItem("AdminUserData"); // Remove userData
+    window.location.reload()
+    // Log to check if the token and userData are null after removal
+    console.log("Token should be null:", localStorage.getItem("Admintoken"));
+    console.log("Token removed from localStorage");
+    console.log("UserData should be null:", localStorage.getItem("AdminUserData"));
+    console.log("UserData removed from localStorage");
+    
+    // Redirect to the login page
+    navigate('/', { replace: true });    
+};
   return (
-    <div className='background'><br /><br />
-      <h1><center>ADD TEACHER</center></h1>
-      <MDBCard className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '1000px' }}>
-        <MDBCardBody className='p-5 w-100 d-flex flex-column'>
+    <div className='container-fluid'>
+      <div style={{ width: "120px", height: "100%", marginRight: "150px" }}>
+        {/* Your existing sidebar content */}
+      </div>
 
+      <div style={{ marginLeft: "250px", marginRight: "13px" }}>
+        <br />
+        <div>
+          <button
+            className="button-5"
+            style={{ float: "right" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+        <div>
+          <h2>Create Teacher</h2>
+          <hr />
+        </div>
+      </div>
+
+      <div style={{marginLeft:'250px'}}>
+      <MDBCard className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '1200px' }}>
+        <MDBCardBody className='p-5 w-100 d-flex flex-column'>
+        <h4>Personal Information</h4><hr />
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <p><b>Name</b></p>
             <Row className="mb-3">
@@ -157,7 +191,6 @@ function CreateTeacher() {
                   <Form.Control
                     type="text"
                     placeholder="Middlename"
-                    required
                     onChange={(e) => setMiddlename(e.target.value)}
                   />
                   <Form.Control.Feedback type="invalid">
@@ -225,7 +258,7 @@ function CreateTeacher() {
               </Form.Group>
             </Row>
 
-            <br /> <hr /> <p><b>Class Handled</b></p>
+            <br /> <h4>Class Handled</h4><hr />
             <Row className="mb-3">
               <Form.Group as={Col} md="2" controlId="validationCustom07">
                 <Form.Label>Grade Level</Form.Label>
@@ -269,7 +302,7 @@ function CreateTeacher() {
               </Form.Group>
             </Row>
 
-            <br /> <hr /><p><b>Contact Details</b></p>
+            <br /> <h4>Contact Detail</h4><hr />
             <Row>
               <Form.Group as={Col} md="4" controlId="validationCustom12">
                 <Form.Label>Email</Form.Label>
@@ -306,7 +339,7 @@ function CreateTeacher() {
 
 
 
-            <Button type="submit">Submit form</Button>
+            <Button type="submit" style={{backgroundColor:"#198754",border: "2px solid #176c1b"}}>Submit form</Button>
 
           </Form>
 
@@ -314,7 +347,9 @@ function CreateTeacher() {
         </MDBCardBody>
 
       </MDBCard>
-      <Link to="/teacherList" className="backbutton">Back</Link>
+      </div>
+      
+      <hr style={{marginLeft:"250px", marginRight:"13px"}}/><br />
     </div>
 
 

@@ -28,7 +28,9 @@ const sendEmail = expressAsyncHandler(async (Email, adminId) => {
       },
       to: Email,
       subject: "Verification Email",
-      text: `To Verify your account please go to ${verificationLink}`,
+      text: `To Verify your account please go to ${verificationLink}. 
+      After Verification your default password is 123 please change it upon logging in. 
+      You can update your account details in the Update Admin option in the sidebar.`,
     };
   
     try {

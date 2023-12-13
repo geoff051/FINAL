@@ -6,7 +6,6 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import { MDBCard, MDBCardBody } from "mdb-react-ui-kit";
 import axios from 'axios'
-import { Link } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 
 function TeacherPersonalUpdate() {
@@ -27,6 +26,21 @@ function TeacherPersonalUpdate() {
     Contact: '',
   });
 
+  const [errorMessages, setErrorMessages] = useState({
+    Firstname: '',
+    Lastname: '',
+    Middlename: '',
+    DOB: '',
+    Street: '',
+    Barangay: '',
+    City: '',
+    Province: '',
+    GradeHandled: '',
+    SectionHandled: '',
+    Email: '',
+    Contact: '',
+  });
+
   useEffect(() => {
     // Fetch teacher data based on the ID
     axios.get(`http://localhost:3001/teacher/${id}`)
@@ -38,27 +52,131 @@ function TeacherPersonalUpdate() {
 
   const updateTeacher = (e) => {
     e.preventDefault();
-
-    const form = e.currentTarget;
-    if (form.checkValidity() === false) {
-      e.stopPropagation();
+    setValidated(true); // Trigger form validation
+  
+    // Check if the form is valid
+    if (!e.currentTarget.checkValidity()) {
+      return;
+    }
+  
+    let isFormValid = true;
+    const newErrorMessages = { ...errorMessages };
+  
+    if (!teacherData.Firstname) {
+      newErrorMessages.Firstname = 'Please enter your First Name.';
+      isFormValid = false;
     } else {
-      // Make a PUT request to update teacher data
-      axios.put(`http://localhost:3001/teacher/${id}`, teacherData)
-        .then(result => console.log(result))
-        .catch(err => console.log(err));
+      newErrorMessages.Firstname = '';
+    }
+  
+    if (!teacherData.Lastname) {
+      newErrorMessages.Lastname = 'Please enter your Last Name.';
+      isFormValid = false;
+    } else {
+      newErrorMessages.Lastname = '';
+    }
+  
+    if (!teacherData.DOB) {
+      newErrorMessages.DOB = 'Please enter your Date of Birth.';
+      isFormValid = false;
+    } else {
+      newErrorMessages.DOB = '';
+    }
+  
+    if (!teacherData.Street) {
+      newErrorMessages.Street = 'Please enter your Street.';
+      isFormValid = false;
+    } else {
+      newErrorMessages.Street = '';
+    }
+  
+    if (!teacherData.Barangay) {
+      newErrorMessages.Barangay = 'Please enter your Barangay.';
+      isFormValid = false;
+    } else {
+      newErrorMessages.Barangay = '';
+    }
+  
+    if (!teacherData.City) {
+      newErrorMessages.City = 'Please enter your City.';
+      isFormValid = false;
+    } else {
+      newErrorMessages.City = '';
+    }
+  
+    if (!teacherData.Province) {
+      newErrorMessages.Province = 'Please enter your Province.';
+      isFormValid = false;
+    } else {
+      newErrorMessages.Province = '';
+    }
+  
+    if (!teacherData.Contact) {
+      newErrorMessages.Contact = 'Please enter your Contact Number.';
+      isFormValid = false;
+    } else {
+      newErrorMessages.Contact = '';
+    }
+  
+    setErrorMessages(newErrorMessages);
 
-      alert("Personal Information Updated Successfully!");
-      setValidated(true);
+    if (isFormValid) {
+      axios.put(`http://localhost:3001/teacher/${id}`, teacherData)
+        .then(result => {
+          console.log(result);
+          alert("Personal Information Updated Successfully! For the Changes To take effect please Log in again.");
+          window.location.reload();
+          setValidated(false);
+        })
+        .catch(err => console.log(err));
     }
   };
 
-  return (
-    <div className='background'>
-      <h1><center>UPDATE Personal Information</center></h1>
-      <MDBCard className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '1500px' }}>
-        <MDBCardBody className='p-5 w-100 d-flex flex-column'>
+  const handleLogout = () => {
+    localStorage.removeItem('teacherToken');
+    axios.get('http://localhost:3001/auth/logout', { withCredentials: true })
+        .then(() => {
+            
+            console.log('Token removed from localStorage');
+          
+            navigate('/', { replace: true });
+            console.log('Redirected successfully');
+            
+        })
+        .catch(error => {
+             
+             console.error('Logout failed:', error);
+        });
+        window.location.reload();
+};
 
+  return (
+    <div className='container-fluid'>
+      <div style={{ width: "120px", height: "100%", marginRight: "150px" }}>
+        {/* Your existing sidebar content */}
+      </div>
+
+      <div style={{ marginLeft: "250px", marginRight: "13px" }}>
+        <br />
+        <div>
+          <button
+            className="button-5"
+            style={{ float: "right" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+        <div>
+          <h2>Update Student Information</h2>
+          <hr />
+        </div>
+      </div>
+
+      <div style={{marginLeft:'250px'}}>
+        <MDBCard className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '1200px' }}>
+        <MDBCardBody className='p-5 w-100 d-flex flex-column'>
+        <h4>Personal Information</h4><hr />
           <Form noValidate validated={validated} onSubmit={updateTeacher}>
             <p><b>Name</b></p>
             <Row className="mb-3">
@@ -71,7 +189,9 @@ function TeacherPersonalUpdate() {
                   value={teacherData.Firstname}
                   onChange={(e) => setTeacherData({ ...teacherData, Firstname: e.target.value })}
                 />
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                 <Form.Control.Feedback type="invalid">
+                {errorMessages.Firstname}
+              </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4" controlId="validationCustom02">
                 <Form.Label>Last name</Form.Label>
@@ -82,7 +202,9 @@ function TeacherPersonalUpdate() {
                   value={teacherData.Lastname}
                   onChange={(e) => setTeacherData({ ...teacherData, Lastname: e.target.value })}
                 />
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                 <Form.Control.Feedback type="invalid">
+                {errorMessages.Lastname}
+              </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="4" controlId="validationCustom002">
                 <Form.Label>Middlename</Form.Label>
@@ -90,12 +212,11 @@ function TeacherPersonalUpdate() {
                   <Form.Control
                     type="text"
                     placeholder="Middlename"
-                    required
                     value={teacherData.Middlename}
                     onChange={(e) => setTeacherData({ ...teacherData, Middlename: e.target.value })}
                   />
-                  <Form.Control.Feedback type="invalid">
-                    Please choose a Middlename.
+                  <Form.Control.Feedback>
+                    Looks Good!
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
@@ -117,7 +238,7 @@ function TeacherPersonalUpdate() {
                     required
                   />
                   <Form.Control.Feedback type="invalid">
-                    Please choose a Birthdate.
+                  {errorMessages.DOB}
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
@@ -136,7 +257,7 @@ function TeacherPersonalUpdate() {
                   onChange={(e) => setTeacherData({ ...teacherData, Street: e.target.value })}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please provide a valid Street.
+                {errorMessages.Street}
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="3" controlId="validationCustom04">
@@ -149,7 +270,7 @@ function TeacherPersonalUpdate() {
                   onChange={(e) => setTeacherData({ ...teacherData, Barangay: e.target.value })}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please provide a valid Barangay.
+                {errorMessages.Barangay}
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="3" controlId="validationCustom05">
@@ -162,7 +283,7 @@ function TeacherPersonalUpdate() {
                   onChange={(e) => setTeacherData({ ...teacherData, City: e.target.value })}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please provide a valid City.
+                {errorMessages.City}
                 </Form.Control.Feedback>
               </Form.Group>
               <Form.Group as={Col} md="3" controlId="validationCustom06">
@@ -175,12 +296,12 @@ function TeacherPersonalUpdate() {
                   onChange={(e) => setTeacherData({ ...teacherData, Province: e.target.value })}
                 />
                 <Form.Control.Feedback type="invalid">
-                  Please provide a valid Province.
+                {errorMessages.Province}
                 </Form.Control.Feedback>
               </Form.Group>
             </Row>
 
-            <br /><hr /><p><b>Contact Details</b></p><br />
+            <br /><h4>Contact Detail</h4><hr />
             <Row>
               <Form.Group as={Col} md="4" controlId="validationCustom13">
                 <Form.Label>Contact Number</Form.Label>
@@ -193,39 +314,26 @@ function TeacherPersonalUpdate() {
                     onChange={(e) => setTeacherData({ ...teacherData, Contact: e.target.value })}
                   />
                   <Form.Control.Feedback type="invalid">
-                    Please Input Correct Contact Number.
+                  {errorMessages.Contact}
                   </Form.Control.Feedback>
                 </InputGroup>
               </Form.Group>
             </Row>
-
-            <Form.Group className="mb-3">
-              <Form.Check
-                required
-                label="Agree to terms and conditions"
-                feedback="You must agree before submitting."
-                feedbackType="invalid"
-              />
-            </Form.Group>
-            <Button type="submit">Submit form</Button>
-
+            <br />
+            <Button type="submit" style={{backgroundColor:'#198754',border:'#176c1b'}} >Submit form</Button>
+                
           </Form>
 
 
         </MDBCardBody>
-
+<center><p>PS. if you have any concern regarding your handled section please contact the admin.</p></center>
       </MDBCard>
-      <Link to="/teacherInfoTeacher" style={{
-        backgroundColor: 'blue',
-        color: 'white',
-        display: 'inline-block',
-        textAlign: 'center',
-        padding: '10px 20px',
-        textDecoration: 'none',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}>Back</Link>
+      </div>
+      
+      <hr style={{marginLeft:"250px", marginRight:"13px"}}/><br />
+      <div style={{ width: "10px", height: "100%", marginRight: "10px" }}>
+        {/* Your existing sidebar content */}
+      </div>
     </div>
   )
 }

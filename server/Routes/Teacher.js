@@ -33,6 +33,33 @@ router.get('/all-teachers', async (req, res) => {
   }
 });
 
+router.get('/teacherCount', async (req, res) => {
+  try {
+    const teacherCount = await TeacherModel.countDocuments();
+    res.json({ teacherCount });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.get('/getStudentCount', async (req, res) => {
+  try {
+    const section = req.query.SectionHandled;
+
+    if (!section) {
+      return res.status(400).json({ error: 'SectionHandled parameter is required.' });
+    }
+
+    // Use your StudentModel to query the database and get the count
+    const studentCount = await StudentModel.countDocuments({ Section: section });
+
+    res.json({ studentCount });
+  } catch (error) {
+    console.error('Error getting student count:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 router.get('/check-section-assignment/:sectionName', async (req, res) => {
   try {

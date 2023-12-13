@@ -87,19 +87,51 @@ function CreateStudent() {
       alert("Student Created Successfully!")
 
     }
-
-
-
-
     setValidated(true);
   };
 
-  return (
-    <div className='background'><br /><br />
-      <h1><center>CREATE STUDENT</center></h1>
-      <MDBCard className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '1000px' }}>
-        <MDBCardBody className='p-5 w-100 d-flex flex-column'>
+  const handleLogout = () => {
+    localStorage.removeItem("Admintoken");
+    localStorage.removeItem("AdminUserData"); // Remove userData
+    window.location.reload()
+    // Log to check if the token and userData are null after removal
+    console.log("Token should be null:", localStorage.getItem("Admintoken"));
+    console.log("Token removed from localStorage");
+    console.log("UserData should be null:", localStorage.getItem("AdminUserData"));
+    console.log("UserData removed from localStorage");
+    
+    // Redirect to the login page
+    navigate('/', { replace: true });    
+};
 
+  return (
+    <div className="container-fluid">
+      <div style={{ width: "120px", height: "100%", marginRight: "150px" }}>
+        {/* Your existing sidebar content */}
+      </div>
+
+      <div style={{ marginLeft: "250px", marginRight: "13px" }}>
+        <br />
+        <div>
+          <button
+            className="button-5"
+            style={{ float: "right" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+        <div>
+          <h2>Create Student</h2>
+          <hr />
+        </div>
+      </div>
+
+    
+    <div style={{marginLeft: "250px"}}>
+      <MDBCard className='bg-white my-5 mx-auto' style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", borderRadius: '1rem', maxWidth: '1200px' }}>
+        <MDBCardBody className='p-5 w-100 d-flex flex-column'>
+        <h4>Personal Information</h4><hr />
           <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <p><b>Name</b></p>
             <Row className="mb-3">
@@ -199,7 +231,7 @@ function CreateStudent() {
               </Form.Group>
             </Row>
 
-            <br /> <hr /> <p><b>Grade Level</b></p>
+            <br /> <h4>Grade Level</h4><hr />
             <Row className="mb-3">
               <Form.Group as={Col} md="2" controlId="validationCustom07">
                 <Form.Label>Grade</Form.Label>
@@ -311,7 +343,7 @@ function CreateStudent() {
 
 
 
-            <Button type="submit">Submit form</Button>
+        <Button type='submit' style={{backgroundColor:"#198754",border: "2px solid #176c1b"}}>Submit form</Button>
             
           </Form>
 
@@ -319,10 +351,12 @@ function CreateStudent() {
         </MDBCardBody>
 
       </MDBCard>
-      <Link to="/studentListAdmin" className="backbutton">Back</Link>
+      
     </div>
-
-
+    <hr style={{marginLeft:"250px", marginRight:"13px"}}/><br />
+      <div style={{ width: "10px", height: "100%", marginRight: "10px" }}>
+        </div>
+    </div>
   );
 }
 

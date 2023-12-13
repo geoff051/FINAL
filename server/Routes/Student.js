@@ -9,7 +9,30 @@ router.get("/", (req, res) => {
     .then(studentinfo => res.json(studentinfo))
     .catch(err => res.json(err))
   })
-  
+
+//counts the number of student
+router.get('/studentCount', async (req, res) => {
+    try {
+      const studentCount = await StudentModel.countDocuments();
+      res.json({ studentCount });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  //counts the number of student based on section
+  router.get('/studentCountBySection/:sectionId', async (req, res) => {
+    try {
+      const sectionId = req.params.sectionId;
+      const studentCount = await StudentModel.countDocuments({ Section: sectionId });
+      res.json({ studentCount });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
   //send data to database
 router.post("/", (req, res) => {
     StudentModel.create(req.body)

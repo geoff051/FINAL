@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -22,9 +22,25 @@ function Login() {
   const [attemptedLogin, setAttemptedLogin] = useState(false); // New state variable
   const navigate = useNavigate();
 
-  const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:3001/auth/google';
+
+  const handleGoogleLogin = async () => {
+    try {
+      console.log('Google login button clicked.');
+      // Redirect to the Google authentication endpoint
+      window.location.href = 'http://localhost:3001/auth/google';
+  
+      // The code after the redirection will only execute if the redirection is successful
+      const response = await axios.get('http://localhost:3001/auth/token');
+      const teacherToken = response.data.teacherToken;
+  
+      console.log('Teacher token:', teacherToken);
+  
+      localStorage.setItem('teacherToken', teacherToken);
+    } catch (error) {
+      console.error('Google login failed:', error);
+    }
   };
+
 
   const handleLogin = async () => {
     try {
@@ -37,11 +53,14 @@ function Login() {
       }
   
       const response = await axios.post('http://localhost:3001/login', { username, password });
-      const { token, verified } = response.data;
+      const { token, verified, AdminToken, userData } = response.data;
   
-      // Handle the token (e.g., save it to local storage)
-      localStorage.setItem('token', token);
-  
+      
+      localStorage.setItem('Admintoken', AdminToken);
+      localStorage.setItem('AdminUserData',  JSON.stringify(userData));
+      console.log('Token saved in local storage:', localStorage.getItem('Admintoken'));
+      console.log('User Data saved in local storage:', localStorage.getItem('AdminUserData'))
+
       if (!verified) {
         // If the account is not verified, show a message
         setLoginError('Account not verified. Please check your email for verification.');
@@ -50,6 +69,7 @@ function Login() {
   
       // Redirect to the admin homepage
       navigate('/adminHomepage');
+      window.location.reload()
     } catch (error) {
       console.error('Login failed:', error.response?.data?.message || 'Unexpected error');
       setLoginError('Invalid username or password');
@@ -85,7 +105,9 @@ function Login() {
 
               <hr className="my-4" />
 
+    
               <button type="button" className="google-sign-in-button" onClick={handleGoogleLogin}>Log In With Google</button>
+              
             </MDBCardBody>
           </MDBCard>
         </MDBCol>

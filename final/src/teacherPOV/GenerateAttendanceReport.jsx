@@ -6,7 +6,7 @@ import Modal from 'react-bootstrap/Modal';
 import { MDBCard, MDBCardBody } from "mdb-react-ui-kit";
 import axios from 'axios';
 import Table from 'react-bootstrap/Table';
-
+import './StyleTPOV.css'
 
 function GenerateAttendanceReport() {
   const [validatedSingleDate, setValidatedSingleDate] = useState(false);
@@ -24,31 +24,27 @@ function GenerateAttendanceReport() {
   const handleSubmitSingleDate = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
-  
-    if (form.checkValidity() === false) {
+
+    if (form.checkValidity() === false || !singleDate) {
       setValidatedSingleDate(true);
-      setError('Please fill in all required fields.');
+      setValidatedDateRange(false); // Set the other form to false to clear its error
+      setSingleDateError(singleDate ? 'Please fill in all required fields.' : 'Please select a single date.');
       return;
     }
-  
+
     setValidatedSingleDate(false);
-    setError('');
-  
+    setSingleDateError('');
+
     try {
       const response = await axios.get(`http://localhost:3001/attendanceReport/getReports/single`, {
         params: { date: singleDate },
         withCredentials: true,
       });
-  
-      console.log("Full response:", response);
-  
+
       const responseData = response.data;
-  
-      console.log("Response data for single date:", responseData);
-  
+
       if (responseData && responseData.reports.length > 0) {
         setAttendanceReportData(responseData.reports);
-        console.log("Updated Attendance Report Data:", responseData.reports);
         setShowSingleDateModal(true);
       } else {
         console.log("No attendance data available for this date.");
@@ -63,26 +59,36 @@ function GenerateAttendanceReport() {
   const handleSubmitDateRange = async (event) => {
     event.preventDefault();
     const form = event.currentTarget;
-  
-    if (form.checkValidity() === false) {
+
+    if (form.checkValidity() === false || !fromDate || !untilDate) {
       setValidatedDateRange(true);
-      setError('Please fill in all required fields.');
+      setValidatedSingleDate(false); // Set the other form to false to clear its error
+      setError(fromDate && untilDate ? 'Please fill in all required fields.' : 'Please select both dates.');
+      setDateRangeError('');
       return;
     }
-  
+
+    const fromDateObj = new Date(fromDate);
+    const untilDateObj = new Date(untilDate);
+
+    if (fromDateObj > untilDateObj) {
+      setValidatedDateRange(true);
+      setError('');
+      setDateRangeError('From date must be before the until date.');
+      return;
+    }
+
     setValidatedDateRange(false);
     setError('');
-  
+
     try {
       const response = await axios.get(`http://localhost:3001/attendanceReport/getReports/multiple`, {
         params: { fromDate, untilDate },
         withCredentials: true,
       });
-  
-      console.log("Response data for date range:", response.data);
-  
+
       const dataToCheck = response.data?.reports || [];
-  
+
       if (dataToCheck.length > 0) {
         setAttendanceReportData(response.data);
         setShowDateRangeModal(true);
@@ -96,8 +102,31 @@ function GenerateAttendanceReport() {
     }
   };
 
+
+  const handleLogout = () => {
+    localStorage.removeItem('teacherToken');
+    axios.get('http://localhost:3001/auth/logout', { withCredentials: true })
+        .then(() => {
+            
+            console.log('Token removed from localStorage');
+          
+            navigate('/', { replace: true });
+            console.log('Redirected successfully');
+            
+        })
+        .catch(error => {
+             
+             console.error('Logout failed:', error);
+        });
+        window.location.reload();
+};
+
   const SingleDateModal = () => {
     const dataToMap = attendanceReportData || [];
+    const [currentPage, setCurrentPage] = useState(0);
+
+    const entriesPerPage = 1;
+    const totalPages = Math.ceil(dataToMap.length / entriesPerPage);
 
     const exportToExcel = async () => {
       try {
@@ -122,9 +151,15 @@ function GenerateAttendanceReport() {
         // Handle error as needed
       }
     };
-    
-    
-  
+
+    const handleNextPage = () => {
+      setCurrentPage((prevPage) => (prevPage + 1) % totalPages);
+    };
+
+    const handlePrevPage = () => {
+      setCurrentPage((prevPage) => (prevPage - 1 + totalPages) % totalPages);
+    };
+
     return (
       <Modal show={showSingleDateModal} onHide={() => setShowSingleDateModal(false)}>
         <Modal.Header closeButton>
@@ -133,7 +168,7 @@ function GenerateAttendanceReport() {
         <Modal.Body>
           {dataToMap.length > 0 ? (
             <div>
-              {dataToMap.map((entry, index) => (
+              {dataToMap.slice(currentPage * entriesPerPage, (currentPage + 1) * entriesPerPage).map((entry, index) => (
                 <div key={index}>
                   <h6>Date: {entry.Date}</h6>
                   <h6>Section: {entry.Section}</h6>
@@ -169,6 +204,17 @@ function GenerateAttendanceReport() {
           ) : (
             <p>{singleDateError || 'No attendance data available for this date.'}</p>
           )}
+          {totalPages > 1 && (
+            <div className="pagination">
+              <Button variant="outline-secondary" onClick={handlePrevPage} disabled={currentPage === 0}>
+                Previous
+              </Button>
+              <span className="mx-2">{`Page ${currentPage + 1} of ${totalPages}`}</span>
+              <Button variant="outline-secondary" onClick={handleNextPage} disabled={currentPage === totalPages - 1}>
+                Next
+              </Button>
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowSingleDateModal(false)}>
@@ -181,9 +227,13 @@ function GenerateAttendanceReport() {
       </Modal>
     );
   };
-  
+
   const DateRangeModal = () => {
     const dataToMap = attendanceReportData?.reports || [];
+    const [currentPage, setCurrentPage] = useState(0);
+
+    const entriesPerPage = 1;
+    const totalPages = Math.ceil(dataToMap.length / entriesPerPage);
 
     const exportToExcel = async () => {
       try {
@@ -208,7 +258,15 @@ function GenerateAttendanceReport() {
         // Handle error as needed
       }
     };
-  
+
+    const handleNextPage = () => {
+      setCurrentPage((prevPage) => (prevPage + 1) % totalPages);
+    };
+
+    const handlePrevPage = () => {
+      setCurrentPage((prevPage) => (prevPage - 1 + totalPages) % totalPages);
+    };
+
     return (
       <Modal show={showDateRangeModal} onHide={() => setShowDateRangeModal(false)}>
         <Modal.Header closeButton>
@@ -217,7 +275,7 @@ function GenerateAttendanceReport() {
         <Modal.Body>
           {dataToMap.length > 0 ? (
             <div>
-              {dataToMap.map((dateData, dateIndex) => (
+              {dataToMap.slice(currentPage * entriesPerPage, (currentPage + 1) * entriesPerPage).map((dateData, dateIndex) => (
                 <div key={dateIndex}>
                   <h6>Date: {dateData.Date}</h6>
                   <h6>Section: {dateData.Section}</h6>
@@ -253,6 +311,17 @@ function GenerateAttendanceReport() {
           ) : (
             <p>No attendance data available for the selected date range.</p>
           )}
+          {totalPages > 1 && (
+            <div className="pagination">
+              <Button variant="outline-secondary" onClick={handlePrevPage} disabled={currentPage === 0}>
+                Previous
+              </Button>
+              <span className="mx-2">{`Page ${currentPage + 1} of ${totalPages}`}</span>
+              <Button variant="outline-secondary" onClick={handleNextPage} disabled={currentPage === totalPages - 1}>
+                Next
+              </Button>
+            </div>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setShowDateRangeModal(false)}>
@@ -265,16 +334,33 @@ function GenerateAttendanceReport() {
       </Modal>
     );
   };
-  
-
   return (
-    <div>
-      <br />
-      <h1><center>Generate Attendance Report</center></h1>
+    <div className="container-fluid">
+      <div style={{ width: "120px", height: "100%", marginRight: "150px" }}>
+        {/* Your existing sidebar content */}
+      </div>
 
-      <MDBCard className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '500px' }}>
+      <div style={{ marginLeft: "250px", marginRight: "13px" }}>
+        <br />
+        <div>
+          <button
+            className="button-5"
+            style={{ float: "right" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+        <div>
+          <h2>Student List</h2>
+          <hr />
+        </div>
+      </div><br /><br />
+
+      <div className="d-flex" style={{marginLeft:'250px'}}>
+        <MDBCard className='bg-white my-5 mx-auto' style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",borderRadius: '1rem', maxWidth: '500px' }}>
         <MDBCardBody className='p-5 w-100 d-flex flex-column'>
-          <h4>Generate Report for Single Dates</h4>
+          <h4>Generate Report for Single Dates</h4> <hr />
           <Form noValidate validated={validatedSingleDate} onSubmit={handleSubmitSingleDate}>
             <Form.Group as={Col} md="5" controlId="validationCustom03">
               <Form.Label>Single Date</Form.Label>
@@ -284,17 +370,17 @@ function GenerateAttendanceReport() {
                 onChange={(e) => setSingleDate(e.target.value)}
                 required
               />
-              <Form.Control.Feedback type="invalid">Please select a single date.</Form.Control.Feedback>
-            </Form.Group>
-            <Button type="submit" className="gradient-custom-4 mt-3">Generate Report</Button>
+              <Form.Control.Feedback type="invalid">{singleDateError || 'Please select a single date.'}</Form.Control.Feedback>
+            </Form.Group> <br /><br /><br /><br />
+            <Button type="submit" className="btn-success" style={{marginTop:"13px"}}>Generate Report</Button>
+            {singleDateError && <p style={{ color: 'red' }}>{singleDateError}</p>}
           </Form>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
         </MDBCardBody>
       </MDBCard>
 
-      <MDBCard className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '500px' }}>
+      <MDBCard className='bg-white my-5 mx-auto' style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",borderRadius: '1rem', maxWidth: '500px' }}>
         <MDBCardBody className='p-5 w-100 d-flex flex-column'>
-          <h4>Generate Report for Multiple Dates</h4>
+          <h4>Generate Report for Multiple Dates</h4> <hr />
           <Form noValidate validated={validatedDateRange} onSubmit={handleSubmitDateRange} className="mt-3">
             <Form.Group as={Col} md="5" controlId="validationCustom01">
               <Form.Label>From</Form.Label>
@@ -304,7 +390,7 @@ function GenerateAttendanceReport() {
                 onChange={(e) => setFromDate(e.target.value)}
                 required
               />
-              <Form.Control.Feedback type="invalid">Please select the From date.</Form.Control.Feedback>
+              <Form.Control.Feedback type="invalid">{dateRangeError || 'Please select the From date.'}</Form.Control.Feedback>
             </Form.Group>
             <Form.Group as={Col} md="5" controlId="validationCustom02">
               <Form.Label>Until</Form.Label>
@@ -314,17 +400,18 @@ function GenerateAttendanceReport() {
                 onChange={(e) => setUntilDate(e.target.value)}
                 required
               />
-              <Form.Control.Feedback type="invalid">Please select the Until date.</Form.Control.Feedback>
-            </Form.Group>
-            <Button type="submit" className="gradient-custom-4 mt-3">Generate Report</Button>
+              <Form.Control.Feedback type="invalid">{dateRangeError || 'Please select the Until date.'}</Form.Control.Feedback>
+            </Form.Group> <br />
+            <Button type="submit" className="btn-success">Generate Report</Button>
+            {dateRangeError && <p style={{ color: 'red' }}>{dateRangeError}</p>}
           </Form>
-          {error && <p style={{ color: 'red' }}>{error}</p>}
         </MDBCardBody>
       </MDBCard>
 
       <SingleDateModal />
       <DateRangeModal />
-
+      </div>
+      
     </div>
   );
 }

@@ -6,19 +6,19 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import { MDBCard, MDBCardBody } from "mdb-react-ui-kit";
 import axios from 'axios';
-
 import "./style.css";
+import { useNavigate } from "react-router-dom";
+
+
 
 function CreateAdminAccount() {
     const [Firstname, setFirstname] = useState("");
     const [Lastname, setLastname] = useState("");
     const [Email, setEmail] = useState("");
     const [Username, setUsername] = useState("");
-    const [Password, setPassword] = useState("");
     const [validated, setValidated] = useState(false);
-    const [emailError, setEmailError] = useState("");
-    const [usernameError, setUsernameError] = useState("");
     const [registrationMessage, setRegistrationMessage] = useState("");
+    const navigate = useNavigate();
 
     const checkExistence = async (field, value) => {
         try {
@@ -50,7 +50,6 @@ function CreateAdminAccount() {
                 Lastname,
                 Email,
                 Username,
-                Password,
             });
     
             setRegistrationMessage(result.data.message);
@@ -63,29 +62,75 @@ function CreateAdminAccount() {
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         const form = e.currentTarget;
-
+    
         if (form.checkValidity() === false) {
             e.stopPropagation();
         } else {
-            // Proceed with registration
-            handleRegistration();
+            try {
+                // Proceed with registration
+                await handleRegistration();
+                // If registration is successful
+                alert("Admin Created Successfully");
+                window.location.reload();
+            } catch (error) {
+                // Handle registration failure if needed
+                console.error("Error during registration:", error);
+            }
         }
-
+    
         setValidated(true);
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem("Admintoken");
+        localStorage.removeItem("AdminUserData"); // Remove userData
+        window.location.reload()
+        // Log to check if the token and userData are null after removal
+        console.log("Token should be null:", localStorage.getItem("Admintoken"));
+        console.log("Token removed from localStorage");
+        console.log("UserData should be null:", localStorage.getItem("AdminUserData"));
+        console.log("UserData removed from localStorage");
+        
+        // Redirect to the login page
+        navigate('/', { replace: true });    
+    };
     return (
-        <div>
+        <div className="container-fluid">
+<div style={{ width: "120px", height: "100%", marginRight: "142px" }}>
+        {/* Your existing sidebar content */}
+      </div>
+    <div style={{ marginLeft: "250px", marginRight: "13px" }}>
             <br />
-            <h1><center>Register an Admin</center></h1>
-            <MDBCard className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '500px' }}>
+            <div>
+            <button
+                className="button-5"
+                style={{ float: "right" }}
+                onClick={handleLogout}
+            >
+                Logout
+            </button>
+            </div>
+            <div>
+            <h2>Create Admin Account</h2>
+            <hr />
+            </div>
+        </div>
+            
+            <div style={{marginLeft:"100px"}}>
+                <MDBCard className='bg-white my-5 mx-auto' 
+            style={{ borderRadius: '1rem', 
+                     maxWidth: '500px',
+                     boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)"}}>
                 <MDBCardBody className='p-5 w-100 d-flex flex-column'>
-                    {registrationMessage && <div className={registrationMessage.includes('Error') ? 'text-danger' : 'text-success'}>{registrationMessage}</div>}
+                    <div style={{color: 'red'}}>
+                       <div style={{ color: registrationMessage.includes('Error') ? 'red' : 'red' }}>{registrationMessage}</div> 
+                    </div>
+                    
                     <Form noValidate validated={validated} onSubmit={handleSubmit}>
-                        <p><b>Name</b></p>
+                        <h4>Admin Account</h4> <hr />
                         <Row className="mb-3">
                             <Form.Group as={Col} md="5" controlId="validationCustom01">
                                 <Form.Label>First name</Form.Label>
@@ -136,28 +181,14 @@ function CreateAdminAccount() {
                                     />
                                 </InputGroup>
                             </Form.Group>
-
-                            <Form.Group as={Col} md="7" controlId="validationCustom004">
-                                <Form.Label>Password</Form.Label>
-                                <InputGroup hasValidation>
-                                    <Form.Control
-                                        type="password"
-                                        placeholder="Password"
-                                        required
-                                        minLength="8"
-                                        onChange={(e) => setPassword(e.target.value)}
-                                    />
-                                    <Form.Control.Feedback type="invalid">
-                                        Password must be at least 8 characters long
-                                    </Form.Control.Feedback>
-                                </InputGroup>
-                            </Form.Group>
                         </Row>
 
-                        <Button type="submit" className="gradient-custom-4">Submit form</Button>
+                        <Button type="submit" className="register">Submit form</Button>
                     </Form>
                 </MDBCardBody>
             </MDBCard>
+            </div>
+            <hr style={{marginLeft:"250px", marginRight:"13px"}}/><br />
         </div>
     );
 }

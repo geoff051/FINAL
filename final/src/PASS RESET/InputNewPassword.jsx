@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, useLocation, redirect } from 'react-router-dom';
 import {
   MDBContainer,
   MDBRow,
@@ -18,10 +18,16 @@ function InputNewPassword() {
 
   const handleSubmit = async () => {
     try {
+      // Check if the password and confirm password match
+      if (password !== confirmPassword) {
+        setPasswordStatus('Password Does not Match');
+        return;
+      }
+  
       // Extract adminId from the URL
       const searchParams = new URLSearchParams(location.search);
       const adminId = searchParams.get('id');
-
+  
       // Send a request to the server to update the password
       const response = await fetch('http://localhost:3001/reset/update-password', {
         method: 'POST',
@@ -30,12 +36,12 @@ function InputNewPassword() {
         },
         body: JSON.stringify({ adminId, password }),
       });
-
+  
       const result = await response.json();
-
+  
       // Update the state based on the server response
       setPasswordStatus(result.message);
-
+  
       // Redirect to the login page if the password is updated successfully
       if (result.success) {
         navigate('/'); // Adjust the path accordingly
@@ -76,7 +82,7 @@ function InputNewPassword() {
               <button className="button-37" role="button" onClick={handleSubmit}>
                 Submit
               </button>
-              {passwordStatus && <div className="mt-2">{passwordStatus}</div>}
+              {passwordStatus && <div className="mt-2" style={{color: "red"}}>{passwordStatus}</div>}
             </MDBCardBody>
           </MDBCard>
         </MDBCol>

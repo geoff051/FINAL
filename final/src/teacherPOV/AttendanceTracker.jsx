@@ -121,12 +121,53 @@ function AttendanceTracker() {
   };
   
   
-
+  const handleLogout = () => {
+    localStorage.removeItem('teacherToken');
+    axios.get('http://localhost:3001/auth/logout', { withCredentials: true })
+        .then(() => {
+            
+            console.log('Token removed from localStorage');
+          
+            navigate('/', { replace: true });
+            console.log('Redirected successfully');
+            
+        })
+        .catch(error => {
+             
+             console.error('Logout failed:', error);
+        });
+        window.location.reload();
+};
   return (
-    <div className="background">
-      <div className="d-flex vh-100 justify-content-center align-items-center">
-        <div className="ftable">
-          <h4 style={{ backgroundColor: '#48A14D', color: 'white', padding: '10px' }}>Section: {teacherData.additionalData?.SectionHandled || "N/A"} </h4>
+    <div className="container-fluid">
+
+<div style={{ width: "120px", height: "100%", marginRight: "150px" }}>
+        {/* Your existing sidebar content */}
+      </div>
+
+      <div style={{ marginLeft: "250px", marginRight: "13px" }}>
+        <br />
+        <div>
+          <button
+            className="button-5"
+            style={{ float: "right" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+        <div>
+          <h2>Attendance Tracker</h2>
+          <hr />
+        </div>
+      </div>
+
+
+     
+
+      <div style={{marginLeft:'250px'}}>
+        <div className="ftable" style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.5)"}}>
+          <h4 style={{ backgroundColor: '#48A14D', color: 'white', padding: '10px', borderRadius:"5px"}}>Section: {teacherData.additionalData?.SectionHandled || "N/A"} </h4>
           <table className="table">
             <thead style={{ backgroundColor: '#48A14D', color: 'white' }}>
               <tr>
@@ -134,7 +175,7 @@ function AttendanceTracker() {
                 <th>Grade</th>
                 <th>Section</th>
                 <th>LRN</th>
-                <th></th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -165,7 +206,7 @@ function AttendanceTracker() {
           </table>
           <hr />
           <div style={{ display: "flex", marginRight: "20px" }}>
-          <div style={{ marginRight: "20px" }}>
+          <div style={{ marginRight: "50px" }}>
             <p><b>Present:</b> {attendanceCounts.Present}</p>
             <p><b>Absent:</b> {attendanceCounts.Absent}</p>
           </div>
@@ -175,13 +216,15 @@ function AttendanceTracker() {
           </div>
 
           <div> 
-            <button className="submitbtn" style={{ float: "right", marginLeft: "300px" }} 
+            <button className="submitbtn" style={{ float: "right", marginLeft: "700px" }} 
           onClick={handleSubmitAttendance}>Submit Attendance</button></div>
         </div>
 
          <hr />
         </div>
+        
       </div>
+      <hr style={{marginLeft:"250px", marginRight:"13px"}}/> <br />
     </div>
   )
 }

@@ -1,10 +1,13 @@
 import './App.css'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 
-
+import AdminisAuthenticated from './Controller/AdminAuthUtils'
+import isAuthenticated from './Controller/AuthUtils'
 import LayoutTPOV from './components/LayoutTPOV'
 import Layout from './components/Layout'
 import Login from './Login'
+
+
 
 
 import * as adminPOV from './adminPOV/index'
@@ -13,37 +16,42 @@ import * as resetPASS from './PASS RESET/index'
 
 
 function App() {
-
+  const TeacherAuth = isAuthenticated();
+  const AdminAuth = AdminisAuthenticated();
 
   return (
     <div className="App">
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Login />}></Route>
-          <Route path="/adminHomepage" element={<Layout><adminPOV.AdminHomepage /></Layout>}></Route>
-          <Route path="/createStudent" element={<adminPOV.CreateStudent />}></Route>
-          <Route path="/updateStudent/:id" element={<adminPOV.UpdateStudent />}></Route>
-          <Route path="/studentListAdmin" element={<Layout><adminPOV.StudentListAdmin /></Layout>}></Route>
-          <Route path="/studentInfoAdmin/:id" element={<Layout><adminPOV.StudentInfoAdmin /></Layout>}></Route>
-          <Route path="/addClassList" element={<adminPOV.AddClassList />}></Route>
-          <Route path="/studentListSection/:sectionId" element={<Layout><adminPOV.StudentListSection /></Layout>}></Route>
-          <Route path="/classListAdmin" element={<Layout><adminPOV.ClassListAdmin /></Layout>}></Route>
-          <Route path="/teacherList" element={<Layout><adminPOV.TeacherList /></Layout>}></Route>
-          <Route path="/createTeacher" element={<adminPOV.CreateTeacher />}></Route>
-          <Route path="/updateTeacher/:id" element={<adminPOV.UpdateTeacher />}></Route>
-          <Route path="/teacherInfoAdmin/:id" element={<Layout><adminPOV.TeacherInfoAdmin /></Layout>}></Route>
-          <Route path="/createAdminAccount" element={<Layout><adminPOV.CreateAdminAccount /></Layout>}></Route>
+          <Route path="/" element={!AdminAuth && !TeacherAuth ? (<Login />) : ( AdminAuth ? <Navigate to="/adminHomepage" /> : <Navigate to="/teacherHomepage" />)}></Route>
+          
+          <Route path="/adminHomepage" element={AdminAuth ? <Layout><adminPOV.AdminHomepage /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/createStudent" element={AdminAuth ? <Layout><adminPOV.CreateStudent /></Layout> : <Navigate to="/"/>}></Route>
+          <Route path="/updateStudent/:id" element={AdminAuth ? <Layout><adminPOV.UpdateStudent /></Layout> : <Navigate to="/"/>}></Route>
+          <Route path="/studentListAdmin" element={AdminAuth ? <Layout><adminPOV.StudentListAdmin /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/studentInfoAdmin/:id" element={AdminAuth ? <Layout><adminPOV.StudentInfoAdmin /></Layout> : <Navigate to="/"/>}></Route>
+          <Route path="/addClassList" element={AdminAuth ? <Layout><adminPOV.AddClassList /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/studentListSection/:sectionId" element={AdminAuth ? <Layout><adminPOV.StudentListSection /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/classListAdmin" element={AdminAuth ? <Layout><adminPOV.ClassListAdmin /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/teacherList" element={AdminAuth ? <Layout><adminPOV.TeacherList /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/createTeacher" element={AdminAuth ? <Layout><adminPOV.CreateTeacher /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/updateTeacher/:id" element={AdminAuth ? <Layout><adminPOV.UpdateTeacher /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/teacherInfoAdmin/:id" element={AdminAuth ? <Layout><adminPOV.TeacherInfoAdmin /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/createAdminAccount" element={AdminAuth ? <Layout><adminPOV.CreateAdminAccount /></Layout> : <Navigate to="/" />}></Route>
+          <Route path="/updateAdminAccount" element={AdminAuth ? <Layout><adminPOV.UpdateAdminAccount /></Layout> : <Navigate to="/" />}></Route>
+
           <Route path="/verificationAdmin" element={<adminPOV.VerificationAdmin/>}></Route>
           
 
           <Route path="/verification" element={<teacherPOV.Verification />}></Route>
-          <Route path="/teacherHomepage" element={<LayoutTPOV><teacherPOV.TeacherHomepage /></LayoutTPOV>}></Route>
-          <Route path="/classListTeacher" element={<LayoutTPOV><teacherPOV.ClassListTeacher /></LayoutTPOV>}></Route>
-          <Route path="/studentInfoTeacher/:id" element={<LayoutTPOV><teacherPOV.StudentInfoTeacher /></LayoutTPOV>}></Route>
-          <Route path="/attendanceTracker" element={<LayoutTPOV><teacherPOV.AttendanceTracker /></LayoutTPOV>}></Route>
-          <Route path="/teacherInfoTeacher" element={<LayoutTPOV><teacherPOV.TeacherInfoTeacher /></LayoutTPOV>}></Route>
-          <Route path="/teacherPersonalUpdate/:id" element={<teacherPOV.TeacherPersonalUpdate />}></Route>
-          <Route path="/generateAttendanceReport" element={<LayoutTPOV><teacherPOV.GenerateAttendanceReport/></LayoutTPOV>}></Route>
+          
+          <Route path="/teacherHomepage" element={TeacherAuth ? <LayoutTPOV><teacherPOV.TeacherHomepage /></LayoutTPOV> : <Navigate to="/" />}></Route>
+          <Route path="/classListTeacher" element={TeacherAuth ? <LayoutTPOV><teacherPOV.ClassListTeacher /></LayoutTPOV> : <Navigate to="/" />}></Route>
+          <Route path="/studentInfoTeacher/:id" element={TeacherAuth ? <LayoutTPOV><teacherPOV.StudentInfoTeacher /></LayoutTPOV> : <Navigate to="/" />}></Route>
+          <Route path="/attendanceTracker" element={TeacherAuth ? <LayoutTPOV><teacherPOV.AttendanceTracker /></LayoutTPOV> : <Navigate to="/" />}></Route>
+          <Route path="/teacherInfoTeacher" element={TeacherAuth ? <LayoutTPOV><teacherPOV.TeacherInfoTeacher /></LayoutTPOV> : <Navigate to="/" />}></Route>
+          <Route path="/teacherPersonalUpdate/:id" element={TeacherAuth ? <LayoutTPOV><teacherPOV.TeacherPersonalUpdate /></LayoutTPOV> : <Navigate to="/" />}></Route>
+          <Route path="/generateAttendanceReport" element={TeacherAuth ? <LayoutTPOV><teacherPOV.GenerateAttendanceReport/></LayoutTPOV> : <Navigate to="/" />}></Route>
 
 
           <Route path="/inputNewPassword" element={<resetPASS.InputNewPassword />}></Route>

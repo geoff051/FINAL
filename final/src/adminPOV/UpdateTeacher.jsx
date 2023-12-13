@@ -28,6 +28,11 @@ function UpdateTeacher(){
     const [Email, setEmail] = useState('')
     const [Contact, setContact] = useState('')
 
+    const [allSections, setallSections] = useState([]);
+    const [allTeachers, setAllTeachers] = useState([]);
+    const [isSectionAssigned, setIsSectionAssigned] = useState(false);
+
+
   useEffect(()=> {
     axios.get('http://localhost:3001/teacher/'+id)
     .then(result => {console.log(result)
@@ -47,30 +52,140 @@ function UpdateTeacher(){
     .catch(err => console.log(err))
 },[])
   
-  const Update = (e) => {
-    const form = e.currentTarget;
-    if (form.checkValidity() === false) {
-      e.preventDefault();
-      e.stopPropagation();
-      
-    } else {
-      axios.put("http://localhost:3001/teacher/"+id, 
-      {Firstname, Lastname, Middlename, DOB, Street, Barangay, City, Province, GradeHandled,
-      SectionHandled, Email, Contact})
-      .then(result => console.log(result))
-      .catch(err => console.log(err))
-      
+ 
+
+useEffect(() => {
+  const checkSectionAssignment = async () => {
+    try {
+      const response = await axios.get(`http://localhost:3001/teacher/check-section-assignment/${SectionHandled}`);
+      setIsSectionAssigned(response.data.isSectionAssigned);
+    } catch (error) {
+      console.error('Error checking section assignment:', error);
     }
-      alert("Teacher Info Updated Successfully!")
-      setValidated(true);
-    };
+  };
+
+  if (SectionHandled) {
+    checkSectionAssignment();
+  }
+}, [SectionHandled]);
+
+useEffect(() => {
+  const fetchData = async () => {
+    try {
+      const sectionsResponse = await axios.get('http://localhost:3001/teacher/all-sections');
+      setallSections(sectionsResponse.data);
+
+      const teachersResponse = await axios.get('http://localhost:3001/teacher/all-teachers');
+      setAllTeachers(teachersResponse.data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  fetchData();
+}, []);
+
+
+useEffect(() => {
+  const fetchSections = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/teacher/all-sections');
+      console.log(response.data); // Add this line
+
+      const sectionHandled = SectionHandled; // Assuming SectionHandled is the selected section
+      const sectionAlreadyAssigned = response.data.some(section => section.SectionName === sectionHandled);
+
+      if (sectionAlreadyAssigned) {
+        setError("Section is already assigned to a teacher. Please pick another section.");
+      }
+
+      setallSections(response.data);
+    } catch (error) {
+      console.error('Error fetching sections:', error);
+    }
+  };
+
+  fetchSections();
+}, []);
+
+
+   const Update = (e) => {
+  e.preventDefault();
+  const form = e.currentTarget;
+
+  if (form.checkValidity() === false || SectionHandled === '' || isSectionAssigned) {
+    e.stopPropagation();
+  } else {
+    axios
+      .put(`http://localhost:3001/teacher/${id}`, {
+        Firstname,
+        Lastname,
+        Middlename,
+        DOB,
+        Street,
+        Barangay,
+        City,
+        Province,
+        GradeHandled,
+        SectionHandled,
+        Email,
+        Contact,
+      })
+      .then((result) => console.log(result))
+      .catch((err) => console.log(err));
+
+    window.location.reload()
+    alert("Teacher Info Updated Successfully!");
+    setValidated(true);
+  }
+};
+  
+
+      
+
+const handleLogout = () => {
+  localStorage.removeItem("Admintoken");
+  localStorage.removeItem("AdminUserData"); // Remove userData
+  window.location.reload()
+  // Log to check if the token and userData are null after removal
+  console.log("Token should be null:", localStorage.getItem("Admintoken"));
+  console.log("Token removed from localStorage");
+  console.log("UserData should be null:", localStorage.getItem("AdminUserData"));
+  console.log("UserData removed from localStorage");
+  
+  // Redirect to the login page
+  navigate('/', { replace: true });    
+};
 
     return(
-        <div className='background'><br /><br />
-        <h1><center>UPDATE TEACHER</center></h1>
-        <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '1000px'}}>
+        <div className='container-fluid'>
+        
+        <div style={{ width: "120px", height: "100%", marginRight: "150px" }}>
+        {/* Your existing sidebar content */}
+      </div>
+
+      <div style={{ marginLeft: "250px", marginRight: "13px" }}>
+        <br />
+        <div>
+          <button
+            className="button-5"
+            style={{ float: "right" }}
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+        <div>
+          <h2>Update Student Information</h2>
+          <hr />
+        </div>
+      </div>
+
+      <div style={{marginLeft:'250px'}}>
+
+        <MDBCard  className='bg-white my-5 mx-auto' style={{borderRadius: '1rem', maxWidth: '1200px'}}>
         <MDBCardBody className='p-5 w-100 d-flex flex-column'>
-         
+        <h4>Personal Information</h4><hr />
             <Form noValidate validated={validated} onSubmit={Update}>
         <p><b>Name</b></p>
       <Row className="mb-3">
@@ -193,7 +308,7 @@ function UpdateTeacher(){
         </Form.Group>
       </Row>
 
-       <br /> <hr /> <p><b>Class Handled</b></p>
+       <br />  <h4>Class Handled</h4><hr />
       <Row className="mb-3">
         <Form.Group as={Col} md="2" controlId="validationCustom07">
           <Form.Label>Grade</Form.Label>
@@ -208,18 +323,38 @@ function UpdateTeacher(){
         </Form.Group>
         <Form.Group as={Col} md="3" controlId="validationCustom08">
           <Form.Label>Section</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            placeholder="Section Handled"
-            value = {SectionHandled}
-            onChange={(e) => setSectionHandled(e.target.value)}
-          />
+          <Form.Select
+                  required
+                  onChange={(e) => {
+                    console.log('Selected section:', e.target.value);
+                    setSection(e.target.value);
+                  }}
+                  value={SectionHandled || ''} // Set the value to an empty string if SectionHandled is undefined
+                >
+                  <option value="" disabled>Select Section</option> {/* Add this line */}
+                  {allSections.map((section) => (
+                    <option
+                      key={section._id}
+                      value={section.SectionName}
+                      style={{
+                        color:
+                          allTeachers.some(
+                            (teacher) => teacher.SectionHandled === section.SectionName
+                          ) ? 'red' : 'black'
+                      }}
+                    >
+                      {section.SectionName}
+                    </option>
+                  ))}
+                </Form.Select>
+                {isSectionAssigned && (
+                  <div style={{ color: 'red' }}>Section is already assigned to a teacher. Please pick another section.</div>
+                )}
           <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
         </Form.Group>
         
       </Row>
-        <br /><hr /><p><b>Contact Details</b></p><br />
+        <br /> <h4>Contact Details</h4><hr />
         <Row>
         <Form.Group as={Col} md="4" controlId="validationCustom12">
           <Form.Label>Email</Form.Label>
@@ -256,7 +391,7 @@ function UpdateTeacher(){
     
 
      <br />
-      <Button type="submit">Submit form</Button>
+     <Button type="submit" style={{backgroundColor:'#198754',border:'#176c1b'}}>Submit form</Button>
       
       </Form>  
       
@@ -264,17 +399,12 @@ function UpdateTeacher(){
         </MDBCardBody>
      
     </MDBCard>
-    <Link to="/teacherList"  style={{
-    backgroundColor: 'blue',
-    color: 'white',
-    display: 'inline-block',
-    textAlign: 'center',
-    padding: '10px 20px', 
-    textDecoration: 'none', 
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  }}>Back</Link>
+    
+    </div>
+    <hr style={{marginLeft:"250px", marginRight:"13px"}}/><br />
+      <div style={{ width: "10px", height: "100%", marginRight: "10px" }}>
+        {/* Your existing sidebar content */}
+      </div>
     </div>
     
     
