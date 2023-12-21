@@ -11,11 +11,25 @@ router.get("/", (req, res) => {
   })
   
   //send section info data to database
-router.post("/", (req, res) => {
-    SectionModel.create(req.body)
-    .then(sectioninfo => res.json(sectioninfo))
-    .catch(err => res.json(err))
-  })
+router.post("/", async (req, res) => {
+    const { SectionName } = req.body;
+  
+    try {
+      // Check if the section name already exists in the database
+      const existingSection = await SectionModel.findOne({ SectionName });
+  
+      if (existingSection) {
+        return res.status(400).json({ error: "Section name already exists" });
+      }
+  
+      // If the section name doesn't exist, create a new entry
+      const sectionInfo = await SectionModel.create(req.body);
+      res.json(sectionInfo);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
   
   //To populate fields
 router.put("/:id", (req, res) => {

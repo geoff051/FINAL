@@ -6,6 +6,7 @@ import isAuthenticated from './Controller/AuthUtils'
 import LayoutTPOV from './components/LayoutTPOV'
 import Layout from './components/Layout'
 import Login from './Login'
+import Error from './Error'
 
 
 
@@ -23,6 +24,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
         <Routes>
+          <Route path="*" element={<Error />}></Route>
           <Route path="/" element={!AdminAuth && !TeacherAuth ? (<Login />) : ( AdminAuth ? <Navigate to="/adminHomepage" /> : <Navigate to="/teacherHomepage" />)}></Route>
           
           <Route path="/adminHomepage" element={AdminAuth ? <Layout><adminPOV.AdminHomepage /></Layout> : <Navigate to="/" />}></Route>

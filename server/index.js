@@ -24,7 +24,6 @@ const loginRoute = require('./Routes/Login')
 const authRoute = require('./Routes/auth')
 const studentRoute = require('./Routes/Student')
 const teacherRoute = require('./Routes/Teacher')
-const attendanceRoute = require('./Routes/Attendance')
 const sectionRoute = require('./Routes/Section')
 const attendanceReportRoute = require('./Routes/AttendanceReport')
 const adminRoute = require('./Routes/Admin')
@@ -68,7 +67,6 @@ app.use("/login", loginRoute);
 app.use("/auth", authRoute)
 app.use("/student", studentRoute);
 app.use("/teacher", teacherRoute);
-app.use("/attendance", attendanceRoute);
 app.use("/section", sectionRoute);
 app.use("/attendanceReport", attendanceReportRoute)
 app.use("/admin", adminRoute);

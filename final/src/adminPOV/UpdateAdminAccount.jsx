@@ -176,12 +176,14 @@ function UpdateAdminAccount() {
                                 value={updatedUserData.LastName}
                                 onChange={(e) => setUpdatedUserData({ ...updatedUserData, LastName: e.target.value })}
                                 className={validationError && !updatedUserData.LastName ? 'border border-danger' : ''}
+                                style={{marginTop:'10px'}}
                             />
                             <MDBInput
                                 label='Username'
                                 value={updatedUserData.Username}
                                 onChange={(e) => setUpdatedUserData({ ...updatedUserData, Username: e.target.value })}
                                 className={validationError && !updatedUserData.Username ? 'border border-danger' : ''}
+                                style={{marginTop:'10px'}}
                             />
                             <MDBInput
                                 label='Password'
@@ -190,6 +192,7 @@ function UpdateAdminAccount() {
                                 value={updatedUserData.Password}
                                 onChange={(e) => setUpdatedUserData({ ...updatedUserData, Password: e.target.value })}
                                 className={validationError && !updatedUserData.Password ? 'border border-danger' : ''}
+                                style={{marginTop:'10px'}}
                             />
                             {validationError && !updatedUserData.Password && (
                                 <p style={{ color: 'red', marginTop: '0.5rem' }}>{validationError}</p>

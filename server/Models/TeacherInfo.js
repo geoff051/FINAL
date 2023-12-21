@@ -12,7 +12,7 @@ const TeacherSchema = new mongoose.Schema({
     SectionHandled: {type: String, unique: true},
     GradeHandled: String,
     Email: {type: String, unique: true},
-    Contact: Number,
+    Contact: String,
     verified: {type: Boolean, default: false}
 })
 

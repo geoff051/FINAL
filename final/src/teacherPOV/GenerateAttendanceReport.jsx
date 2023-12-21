@@ -352,7 +352,7 @@ function GenerateAttendanceReport() {
           </button>
         </div>
         <div>
-          <h2>Student List</h2>
+          <h2>Generate Attendance Report</h2>
           <hr />
         </div>
       </div><br /><br />
@@ -360,7 +360,7 @@ function GenerateAttendanceReport() {
       <div className="d-flex" style={{marginLeft:'250px'}}>
         <MDBCard className='bg-white my-5 mx-auto' style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",borderRadius: '1rem', maxWidth: '500px' }}>
         <MDBCardBody className='p-5 w-100 d-flex flex-column'>
-          <h4>Generate Report for Single Dates</h4> <hr />
+          <h4>Generate Report for Single Date</h4> <hr />
           <Form noValidate validated={validatedSingleDate} onSubmit={handleSubmitSingleDate}>
             <Form.Group as={Col} md="5" controlId="validationCustom03">
               <Form.Label>Single Date</Form.Label>

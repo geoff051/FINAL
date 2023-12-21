@@ -111,4 +111,27 @@ router.get('/section/:sectionId', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
   });
+  
+
+  router.get('/check-lrn/:lrn', async (req, res) => {
+    try {
+      const lrn = req.params.lrn;
+  
+      // Check if LRN already exists in the database
+      const student = await StudentModel.findOne({ LRN: lrn });
+  
+      if (student) {
+        // LRN is already taken
+        return res.json({ isTaken: true });
+      } else {
+        // LRN is available
+        return res.json({ isTaken: false });
+      }
+    } catch (error) {
+      console.error('Error checking LRN:', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+
+  
   module.exports = router;

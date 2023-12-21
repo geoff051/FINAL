@@ -85,6 +85,7 @@ function Login() {
               <img src={Slogo} alt="buksu logo" className='center-image' />
               <h2 className="fw-bold mb-2 text-center">Barangay 9 <br />Elementary School</h2>
               <br />
+              <b><p>Admin Log in</p></b>
               <MDBInput wrapperClass='mb-4 w-100' label='Username' id='formControlLg1' 
               type='email' size="lg" onChange={(e) => setUsername(e.target.value)} value={username} />
 
@@ -105,7 +106,7 @@ function Login() {
 
               <hr className="my-4" />
 
-    
+              <b><p>Teacher Log in</p></b>
               <button type="button" className="google-sign-in-button" onClick={handleGoogleLogin}>Log In With Google</button>
               
             </MDBCardBody>

@@ -21,6 +21,22 @@ hr{
     background-color: #b7edba;
 }
 
+.input-group {
+  position: relative;
+}
+
+.arrow-down {
+  position: absolute;
+  top: 50%;
+  right: 10px; /* Adjust the right spacing as needed */
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 5px solid #495057; /* Adjust the color as needed */
+}
+
 .button-5 {
     align-items: center;
     background-clip: padding-box;

@@ -46,12 +46,12 @@ function ClassListAdmin() {
 };
 
   return (
-    <div className="d-flex">
+    <div className="container-fluid">
       <div style={{ width: "120px", height: "100%", marginRight: "142px" }}>
         {/* Your existing sidebar content */}
       </div>
 
-      <div className="d-flex flex-column">
+      <div className="d-flex flex-column" style={{marginLeft: '250px', marginRight:'13px'}}>
 
         <div>
           <br />
@@ -134,7 +134,11 @@ function ClassListAdmin() {
                     }}
                   >
                     <MDBCardBody className="p-3 w-100 d-flex flex-column" style={{ backgroundColor: "whitesmoke", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", borderRadius: "10px", }}>
-                      <Link to={`/studentListSection/${section.SectionName}`}>
+                      <Link to={{
+                        pathname: `/studentListSection/${section.SectionName}`,
+                        state: { sectionData: sections }, // Pass section data
+                      }}
+                    >
                         <button
                           className="button-57 mb-2"
                           role="button"

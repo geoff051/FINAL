@@ -21,6 +21,9 @@ function CreateStudent() {
   const [sectionOptions, setSectionOptions] = useState([{ _id: '', SectionName: 'Choose a section' }]);
   const [sectionSelected, setSectionSelected] = useState(false);
 
+  const [isLRNTaken, setIsLRNTaken] = useState(false);
+  const [birthdayError, setBirthdayError] = useState(false);
+
   const [Firstname, setFirstname] = useState()
   const [Lastname, setLastname] = useState()
   const [Middlename, setMiddlename] = useState()
@@ -53,6 +56,25 @@ function CreateStudent() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // Check if the selected date is not past 1923
+    const birthYear = new Date(DOB).getFullYear();
+    setBirthdayError(birthYear < 1923);
+  }, [DOB]);
+
+  const handleLRNChange = async (e) => {
+    const lrnValue = e.target.value;
+    setLRN(lrnValue);
+
+    try {
+      const response = await axios.get(`http://localhost:3001/student/check-lrn/${lrnValue}`);
+      const { isTaken } = response.data;
+      setIsLRNTaken(isTaken);
+    } catch (error) {
+      console.error('Error checking LRN:', error);
+    }
+  };
+
 
   const handleSectionDropdownClick = async () => {
     // Load sections when the dropdown is clicked
@@ -75,17 +97,23 @@ function CreateStudent() {
     if (form.checkValidity() === false || !sectionSelected) {
       e.preventDefault();
       e.stopPropagation();
-
     } else {
-      axios.post("http://localhost:3001/student",
-        {
-          Firstname, Lastname, Middlename, DOB, Street, Barangay, City, Province, Grade,
-          Section, LRN, Mother, Father, PEmail, Contact
-        })
-        .then(result => console.log(result))
-        .catch(err => console.log(err))
-      alert("Student Created Successfully!")
+      // Query the selected Section to get the Grade Level
+      const selectedSection = allSections.find(section => section.SectionName === Section);
 
+      // Update the Grade state with the Grade Level from the selected Section
+      setGrade(selectedSection.Gradelvl);
+
+      // Save the student data
+      axios.post("http://localhost:3001/student", {
+        Firstname, Lastname, Middlename, DOB, Street, Barangay, City, Province,
+        Section, LRN, Mother, Father, PEmail, Contact,
+        Grade: selectedSection.Gradelvl // Add the Grade Level to the request body
+      })
+        .then(result => console.log(result))
+        .catch(err => console.log(err));
+
+      alert("Student Created Successfully!");
     }
     setValidated(true);
   };
@@ -99,10 +127,10 @@ function CreateStudent() {
     console.log("Token removed from localStorage");
     console.log("UserData should be null:", localStorage.getItem("AdminUserData"));
     console.log("UserData removed from localStorage");
-    
+
     // Redirect to the login page
-    navigate('/', { replace: true });    
-};
+    navigate('/', { replace: true });
+  };
 
   return (
     <div className="container-fluid">
@@ -127,235 +155,264 @@ function CreateStudent() {
         </div>
       </div>
 
-    
-    <div style={{marginLeft: "250px"}}>
-      <MDBCard className='bg-white my-5 mx-auto' style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", borderRadius: '1rem', maxWidth: '1200px' }}>
-        <MDBCardBody className='p-5 w-100 d-flex flex-column'>
-        <h4>Personal Information</h4><hr />
-          <Form noValidate validated={validated} onSubmit={handleSubmit}>
-            <p><b>Name</b></p>
-            <Row className="mb-3">
-              <Form.Group as={Col} md="4" controlId="validationCustom01">
-                <Form.Label>First name</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="First name"
-                  onChange={(e) => setFirstname(e.target.value)}
 
-                />
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="4" controlId="validationCustom02">
-                <Form.Label>Last name</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="Last name"
-                  onChange={(e) => setLastname(e.target.value)}
-
-                />
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="4" controlId="validationCustom002">
-                <Form.Label>Middlename</Form.Label>
-                <InputGroup hasValidation>
+      <div style={{ marginLeft: "250px" }}>
+        <MDBCard className='bg-white my-5 mx-auto' style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", borderRadius: '1rem', maxWidth: '1200px' }}>
+          <MDBCardBody className='p-5 w-100 d-flex flex-column'>
+            <h4>Personal Information</h4><hr />
+            <Form noValidate validated={validated} onSubmit={handleSubmit}>
+              <p><b>Name</b></p>
+              <Row className="mb-3">
+                <Form.Group as={Col} md="4" controlId="validationCustom01">
+                  <Form.Label>First name</Form.Label>
                   <Form.Control
+                    required
                     type="text"
-                    placeholder="Middlename"
+                    placeholder="First name"
+                    pattern="[A-Za-z ]+"
+                    title="Please enter only letters"
+                    onChange={(e) => setFirstname(e.target.value)}
 
-                    onChange={(e) => setMiddlename(e.target.value)}
                   />
                   <Form.Control.Feedback type="invalid">
-                    Please choose a Middlename.
+                    Please Input Valid First Name
                   </Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
-            </Row>
-
-            <br /> <p><b>Birthdate</b></p>
-            <Row className='mb-3'>
-              <Form.Group as={Col} md="4" controlId="validationCustomDOB">
-                <Form.Label>Date of Birth</Form.Label>
-                <InputGroup hasValidation>
-                  <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
-                  <Form.Control
-                    type="date"
-                    placeholder="Enter Birthdate"
-                    name='birthdate'
-                    max={current}
-                    onChange={(e) => setDOB(e.target.value)}
-                    required
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    Please choose a Birthdate.
-                  </Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
-            </Row>
-
-            <br />
-            <p><b>Address</b></p>
-            <Row className="mb-3">
-              <Form.Group as={Col} md="4" controlId="validationCustom03">
-                <Form.Label>Street</Form.Label>
-                <Form.Control type="text" placeholder="Street" required
-                  onChange={(e) => setStreet(e.target.value)} />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid Street.
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="3" controlId="validationCustom04">
-                <Form.Label>Barangay</Form.Label>
-                <Form.Control type="text" placeholder="Barangay" required
-                  onChange={(e) => setBarangay(e.target.value)} />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid Barangay.
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="3" controlId="validationCustom05">
-                <Form.Label>City</Form.Label>
-                <Form.Control type="text" placeholder="City" required
-                  onChange={(e) => setCity(e.target.value)} />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid City.
-                </Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="3" controlId="validationCustom06">
-                <Form.Label>Province</Form.Label>
-                <Form.Control type="text" placeholder="Province" required
-                  onChange={(e) => setProvince(e.target.value)} />
-                <Form.Control.Feedback type="invalid">
-                  Please provide a valid Province.
-                </Form.Control.Feedback>
-              </Form.Group>
-            </Row>
-
-            <br /> <h4>Grade Level</h4><hr />
-            <Row className="mb-3">
-              <Form.Group as={Col} md="2" controlId="validationCustom07">
-                <Form.Label>Grade</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="Grade Level"
-                  onChange={(e) => setGrade(e.target.value)}
-                />
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="3" controlId="validationCustom08">
-                <Form.Label>Section</Form.Label>
-                <Form.Select
-                  required
-                  onClick={handleSectionDropdownClick}
-                  onChange={(e) => handleSectionChange(e.target.value)}
-                  className={sectionSelected ? 'is-valid' : 'is-invalid'}
-                >
-                  {sectionOptions.map((section) => (
-                    <option
-                      key={section._id}
-                      value={section.SectionName}
-                      >
-                      {section.SectionName}
-                    </option>
-                  ))}
-                </Form.Select>
-                <Form.Control.Feedback type="invalid">
-                Please choose a section.
-              </Form.Control.Feedback>
-              {validated && !sectionSelected && (
-              <div className="text-danger mt-2">Please choose a section.</div>
-            )}
-            </Form.Group>
-                       
-              <Form.Group as={Col} md="4" controlId="validationCustom09">
-                <Form.Label>LRN</Form.Label>
-                <InputGroup hasValidation>
-                  <Form.Control
-                    type="number"
-                    placeholder="LRN"
-                    required
-                    minLength="12"
-                    maxLength="12"
-                    onChange={(e) => setLRN(e.target.value)}
-                  />
-                  <Form.Control.Feedback type="invalid">
-                    Please Input 12 digit LRN.
-                  </Form.Control.Feedback>
-                </InputGroup>
-              </Form.Group>
-            </Row>
-
-            <br /><p><b>Parent Information</b></p>
-            <Row className="mb-3">
-              <Form.Group as={Col} md="3" controlId="validationCustom10">
-                <Form.Label>Mothers Name</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="Mothers Name"
-                  onChange={(e) => setMother(e.target.value)}
-                />
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              </Form.Group>
-              <Form.Group as={Col} md="3" controlId="validationCustom11">
-                <Form.Label>Fathers Name</Form.Label>
-                <Form.Control
-                  required
-                  type="text"
-                  placeholder="Fathers Name"
-                  onChange={(e) => setFather(e.target.value)}
-                />
-                <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-              </Form.Group>
-              <Row>
-                <Form.Group as={Col} md="4" controlId="validationCustom12">
-                  <Form.Label>Email</Form.Label>
-                  <InputGroup hasValidation>
-                    <Form.Control
-                      type="email"
-                      placeholder="Email"
-                      required
-                      onChange={(e) => setPEmail(e.target.value)}
-                    />
-                    <Form.Control.Feedback type="invalid">
-                      Please Input Valid Email.
-                    </Form.Control.Feedback>
-                  </InputGroup>
                 </Form.Group>
-                <Form.Group as={Col} md="4" controlId="validationCustom13">
-                  <Form.Label>Contact Number</Form.Label>
+                <Form.Group as={Col} md="4" controlId="validationCustom02">
+                  <Form.Label>Last name</Form.Label>
+                  <Form.Control
+                    required
+                    type="text"
+                    placeholder="Last name"
+                    pattern="[A-Za-z ]+"
+                    title="Please enter only letters"
+                    onChange={(e) => setLastname(e.target.value)}
+
+                  />
+                  <Form.Control.Feedback type="invalid">
+                    Please Input Valid Last Name
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md="4" controlId="validationCustom002">
+                  <Form.Label>Middlename</Form.Label>
                   <InputGroup hasValidation>
                     <Form.Control
-                      type="tel"
-                      placeholder="Contact Number"
-                      required
-                      onChange={(e) => setContact(e.target.value)}
+                      type="text"
+                      placeholder="Middlename"
+                      onChange={(e) => setMiddlename(e.target.value)}
+                      pattern="[A-Za-z ]+"
+                      title="Please enter only letters"
                     />
                     <Form.Control.Feedback type="invalid">
-                      Please Input Correct Contact Number.
+                      Please Input Valid Middlename
                     </Form.Control.Feedback>
                   </InputGroup>
                 </Form.Group>
               </Row>
 
-            </Row>
+              <br /> <p><b>Birthdate</b></p>
+              <Row className='mb-3'>
+                <Form.Group as={Col} md="4" controlId="validationCustomDOB">
+                  <Form.Label>Date of Birth</Form.Label>
+                  <InputGroup hasValidation>
+                    <InputGroup.Text id="inputGroupPrepend"></InputGroup.Text>
+                    <Form.Control
+                      type="date"
+                      placeholder="Enter Birthdate"
+                      name="birthdate"
+                      min="1923-01-01"  // Set the minimum date
+                      max={current}
+                      value={DOB}
+                      onChange={(e) => {
+                        setDOB(e.target.value);
+                        // Check if the selected date is not past 1923
+                        if (new Date(e.target.value) > new Date("1923-01-01")) {
+                          setBirthdayError(true);
+                        } else {
+                          setBirthdayError(false);
+                        }
+                      }}
+                      required
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {birthdayError
+                        ? 'Please choose a Birthdate not past 1923.'
+                        : 'Please choose a valid Birthdate.'}
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                </Form.Group>
+              </Row>
+
+              <br />
+              <p><b>Address</b></p>
+              <Row className="mb-3">
+                <Form.Group as={Col} md="4" controlId="validationCustom03">
+                  <Form.Label>Street</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Street"
+                    required
+                    pattern="^[a-zA-Z0-9\s, .]+$"
+                    onChange={(e) => setStreet(e.target.value)} />
+                  <Form.Control.Feedback type="invalid">
+                    Please provide a valid Street.
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md="3" controlId="validationCustom04">
+                  <Form.Label>Barangay</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Barangay"
+                    required
+                    pattern="^[a-zA-Z0-9\s, .]+$"
+                    onChange={(e) => setBarangay(e.target.value)} />
+                  <Form.Control.Feedback type="invalid">
+                    Please provide a valid Barangay.
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md="3" controlId="validationCustom05">
+                  <Form.Label>City</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="City"
+                    required
+                    pattern="^[a-zA-Z0-9\s, .]+$"
+                    onChange={(e) => setCity(e.target.value)} />
+                  <Form.Control.Feedback type="invalid">
+                    Please provide a valid City.
+                  </Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md="3" controlId="validationCustom06">
+                  <Form.Label>Province</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Province"
+                    required
+                    pattern="^[a-zA-Z0-9\s, .]+$"
+                    onChange={(e) => setProvince(e.target.value)} />
+                  <Form.Control.Feedback type="invalid">
+                    Please provide a valid Province.
+                  </Form.Control.Feedback>
+                </Form.Group>
+              </Row>
+
+              <br /> <h4>Grade Level</h4><hr />
+              <Row className="mb-3">
+                <Form.Group as={Col} md="3" controlId="validationCustom08">
+                  <Form.Label>Section</Form.Label>
+                  <Form.Select
+                    required
+                    onClick={handleSectionDropdownClick}
+                    onChange={(e) => handleSectionChange(e.target.value)}
+                    className={sectionSelected ? 'is-valid' : 'is-invalid'}
+                  >
+                    {sectionOptions.map((section) => (
+                      <option
+                        key={section._id}
+                        value={section.SectionName}
+                      >
+                        {section.SectionName}
+                      </option>
+                    ))}
+                  </Form.Select>
+                  <Form.Control.Feedback type="invalid">
+                    {validated && !sectionSelected && (
+                      <div className="text-danger mt-2">Please choose a section.</div>
+                    )}
+                  </Form.Control.Feedback>
+
+                </Form.Group>
+
+                <Form.Group as={Col} md="4" controlId="validationCustom09">
+                  <Form.Label>LRN</Form.Label>
+                  <InputGroup hasValidation>
+                    <Form.Control
+                      type="text"
+                      placeholder="LRN"
+                      required
+                      pattern="[0-9]{12}"
+                      value={LRN}
+                      onChange={handleLRNChange}
+                      isInvalid={isLRNTaken}
+                    />
+                    <Form.Control.Feedback type="invalid">
+                      {isLRNTaken ? 'LRN is already taken.' : 'Please Input 12 digit LRN.'}
+                    </Form.Control.Feedback>
+                  </InputGroup>
+                </Form.Group>
+              </Row>
+
+              <br /><p><b>Parent Information</b></p>
+              <Row className="mb-3">
+                <Form.Group as={Col} md="3" controlId="validationCustom10">
+                  <Form.Label>Mothers Name</Form.Label>
+                  <Form.Control
+                    required
+                    type="text"
+                    placeholder="Mothers Name"
+                    onChange={(e) => setMother(e.target.value)}
+                  />
+                  <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group as={Col} md="3" controlId="validationCustom11">
+                  <Form.Label>Fathers Name</Form.Label>
+                  <Form.Control
+                    required
+                    type="text"
+                    placeholder="Fathers Name"
+                    onChange={(e) => setFather(e.target.value)}
+                  />
+                  <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
+                </Form.Group>
+                <Row>
+                  <Form.Group as={Col} md="4" controlId="validationCustom12">
+                    <Form.Label>Email</Form.Label>
+                    <InputGroup hasValidation>
+                      <Form.Control
+                        type="email"
+                        placeholder="Email"
+                        required
+                        onChange={(e) => setPEmail(e.target.value)}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                        Please Input Valid Email.
+                      </Form.Control.Feedback>
+                    </InputGroup>
+                  </Form.Group>
+                  <Form.Group as={Col} md="4" controlId="validationCustom13">
+                    <Form.Label>Contact Number</Form.Label>
+                    <InputGroup hasValidation>
+                      <Form.Control
+                        type="tel"
+                        placeholder="Contact Number"
+                        required
+                        pattern="^(09|\+639)\d{9}$"
+                        onChange={(e) => setContact(e.target.value)}
+                      />
+                      <Form.Control.Feedback type="invalid">
+                      Please input a correct Philippine contact number (e.g., 09123456789 or +639123456789).
+                      </Form.Control.Feedback>
+                    </InputGroup>
+                  </Form.Group>
+                </Row>
+
+              </Row>
 
 
 
-        <Button type='submit' style={{backgroundColor:"#198754",border: "2px solid #176c1b"}}>Submit form</Button>
-            
-          </Form>
+              <Button type='submit' style={{ backgroundColor: "#198754", border: "2px solid #176c1b" }}>Submit form</Button>
+
+            </Form>
 
 
-        </MDBCardBody>
+          </MDBCardBody>
 
-      </MDBCard>
-      
-    </div>
-    <hr style={{marginLeft:"250px", marginRight:"13px"}}/><br />
+        </MDBCard>
+
+      </div>
+      <hr style={{ marginLeft: "250px", marginRight: "13px" }} /><br />
       <div style={{ width: "10px", height: "100%", marginRight: "10px" }}>
-        </div>
+      </div>
     </div>
   );
 }

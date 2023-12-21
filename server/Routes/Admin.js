@@ -39,6 +39,8 @@ router.post('/createAdmin', async (req, res) => {
       return res.status(400).json({ error: 'Username already exists. Please choose a different username.' });
     }
 
+    const defaultPassword = '123';  // Set the default plain text password
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10); // Hash the password
 
     // Save the admin information with the hashed password
     const adminInfo = await AdminModel.create({
@@ -46,6 +48,7 @@ router.post('/createAdmin', async (req, res) => {
       Lastname,
       Email,
       Username,
+      Password: hashedPassword,
     });
 
     // Only send verification email if admin creation is successful

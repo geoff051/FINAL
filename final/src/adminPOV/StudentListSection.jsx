@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./style.css"
@@ -12,8 +12,10 @@ function StudentListSection() {
     const [studentsPerPage] = useState(10);
     const navigate = useNavigate();
     const [studentCount, setStudentCount] = useState(0);
+ 
   
     useEffect(() => {
+
       axios.get(`http://localhost:3001/student/section/${encodeURIComponent(sectionId)}`)
         .then((result) => {
           console.log(result);
@@ -145,6 +147,8 @@ function StudentListSection() {
         <br />
       </div>
 
+
+      
       <br />
       <div className="ftable" style={{ boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", marginLeft: "250px" }}>
       <tr className="student-count">Total Students: {studentCount} </tr>

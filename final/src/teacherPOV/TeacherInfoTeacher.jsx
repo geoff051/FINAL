@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
-import { MDBCard, MDBCardBody } from "mdb-react-ui-kit"; // Import the necessary components from your MDBReact library
+
 
 function TeacherInfoTeacher() {
     const [teacherData, setTeacherData] = useState({});

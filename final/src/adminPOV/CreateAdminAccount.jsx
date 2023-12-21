@@ -54,6 +54,7 @@ function CreateAdminAccount() {
     
             setRegistrationMessage(result.data.message);
             if (result.data.success) {
+                alert("Admin Created Successfully");
                 window.location.reload();
             }
         } catch (err) {
@@ -73,14 +74,13 @@ function CreateAdminAccount() {
                 // Proceed with registration
                 await handleRegistration();
                 // If registration is successful
-                alert("Admin Created Successfully");
-                window.location.reload();
+                
             } catch (error) {
                 // Handle registration failure if needed
                 console.error("Error during registration:", error);
             }
         }
-    
+        
         setValidated(true);
     };
 

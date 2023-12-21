@@ -25,7 +25,7 @@ router.get(
         res.redirect(frontendRedirectURL);
     })
 
-    router.get('/token', (req, res) => {
+router.get('/token', (req, res) => {
         const teacherToken = uuidv4();
         console.log('Teacher Token:', teacherToken)
         res.json({teacherToken})

@@ -59,30 +59,30 @@ router.post('/', async (req, res) => {
   }
 });
 
-const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization;
+// const verifyToken = (req, res, next) => {
+//   const token = req.headers.authorization;
 
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized: Missing token' });
-  }
+//   if (!token) {
+//     return res.status(401).json({ message: 'Unauthorized: Missing token' });
+//   }
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    console.error('Token verification failed:', error);
-    return res.status(401).json({ message: 'Unauthorized: Invalid token' });
-  }
-};
+//   try {
+//     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//     req.user = decoded;
+//     next();
+//   } catch (error) {
+//     console.error('Token verification failed:', error);
+//     return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+//   }
+// };
 
-router.get('/userData', verifyToken, (req, res) => {
-  // Access user data from the decoded token
-  const userData = req.user;
+// router.get('/userData', verifyToken, (req, res) => {
+//   // Access user data from the decoded token
+//   const userData = req.user;
 
-  // You can now use userData in your route logic
-  res.json({ userData });
-});
+//   // You can now use userData in your route logic
+//   res.json({ userData });
+// });
 
 
   

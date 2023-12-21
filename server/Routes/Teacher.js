@@ -151,6 +151,13 @@ router.get("/", (req, res) => {
   
       // Create a teacher record in the database
       const teacherInfo = await TeacherModel.create(req.body);
+
+
+      const section = await SectionModel.findOneAndUpdate(
+        { SectionName: req.body.SectionHandled },
+        { $set: { Adviser: `${req.body.Firstname} ${req.body.Lastname}` } },
+        { new: true }
+      );
   
       // Send verification email with the teacher's information
       const emailResult = await sendEmail(teacherInfo.Email, teacherInfo._id);
@@ -196,11 +203,32 @@ router.get("/", (req, res) => {
   
   
   
-  //To populate the fields when updating the teacher
-router.put("/:id", (req, res) => {
+  //Update teacher
+  router.put("/:id", async (req, res) => {
+    try {
       const id = req.params.id;
-      TeacherModel.findByIdAndUpdate({_id: id},
-        {Firstname: req.body.Firstname,
+  
+      // Fetch the existing teacher details
+      const existingTeacher = await TeacherModel.findById(id);
+  
+      // Check if the updated section is already assigned to another teacher
+      if (
+        req.body.SectionHandled !== existingTeacher.SectionHandled &&
+        (await TeacherModel.exists({
+          SectionHandled: req.body.SectionHandled,
+          _id: { $ne: id }, // Exclude the current teacher from the check
+        }))
+      ) {
+        return res.status(400).json({
+          error: "Section is already assigned to another teacher. Please pick another section.",
+        });
+      }
+  
+      // Update the teacher details
+      const updatedTeacher = await TeacherModel.findByIdAndUpdate(
+        { _id: id },
+        {
+          Firstname: req.body.Firstname,
           Lastname: req.body.Lastname,
           Middlename: req.body.Middlename,
           DOB: req.body.DOB,
@@ -211,11 +239,23 @@ router.put("/:id", (req, res) => {
           SectionHandled: req.body.SectionHandled,
           GradeHandled: req.body.GradeHandled,
           Email: req.body.Email,
-          Contact: req.body.Contact
-        })
-        .then(teacherinfo => res.json(teacherinfo))
-        .catch(err => res.json(err))
-  })
+          Contact: req.body.Contact,
+        },
+        { new: true } // Return the updated document
+      );
+
+      const section = await SectionModel.findOneAndUpdate(
+        { SectionName: req.body.SectionHandled },
+        { $set: { Adviser: `${req.body.Firstname} ${req.body.Lastname}` } },
+        { new: true }
+      );
+  
+      res.json(updatedTeacher);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: "Unexpected error" });
+    }
+  });
   
   //delete teacher
 router.delete("/:id", (req, res) => {
